@@ -139,7 +139,7 @@ export default function PronosticosPage() {
             <button
               onClick={() => setGrupoActual(GRUPOS[grupoIdx - 1])}
               disabled={grupoIdx === 0}
-              className="p-2 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-3 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
@@ -149,7 +149,7 @@ export default function PronosticosPage() {
                 <button
                   key={g}
                   onClick={() => setGrupoActual(g)}
-                  className={`w-9 h-9 rounded-lg font-bold text-sm transition-all ${
+                  className={`w-11 h-11 rounded-lg font-bold text-sm transition-all ${
                     grupoActual === g
                       ? 'bg-amber-400 text-slate-900'
                       : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
@@ -163,7 +163,7 @@ export default function PronosticosPage() {
             <button
               onClick={() => setGrupoActual(GRUPOS[grupoIdx + 1])}
               disabled={grupoIdx === GRUPOS.length - 1}
-              className="p-2 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-3 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-6 h-6" />
             </button>

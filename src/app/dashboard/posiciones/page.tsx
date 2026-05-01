@@ -290,7 +290,7 @@ export default function PosicionesPage() {
 
                     <button
                       onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
-                      className="w-full mt-3 py-2 text-xs bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
+                      className="w-full mt-3 py-3 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-h-[48px]"
                     >
                       {isExpanded ? 'Ocultar detalles' : 'Ver detalles'}
                     </button>
@@ -367,12 +367,12 @@ export default function PosicionesPage() {
                 return (
                   <div key={entry.usuarioId} className="space-y-2">
                     <div
-                      className={`p-4 ${
+                      className={`p-5 ${
                         entry.usuarioId === user?.uid ? 'bg-amber-400/10' : ''
                       }`}
                     >
                       {/* Fila principal */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4">
                         <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300">
                           {posicion}
                         </div>
@@ -449,7 +449,7 @@ export default function PosicionesPage() {
                         {/* Expand button */}
                         <button
                           onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
-                          className="px-3 py-1 text-xs bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
+                          className="px-4 py-2 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                         >
                           {isExpanded ? '▲' : '▼'}
                         </button>
