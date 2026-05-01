@@ -223,7 +223,9 @@ export default function PronosticosPage() {
                     <div className="text-2xl mb-2">{getBandera(partido.equipoA)}</div>
                     <div className="text-sm font-bold text-white">{partido.nombreA}</div>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       min="0"
                       max="20"
                       value={pronostico?.golesA ?? ''}
@@ -242,7 +244,9 @@ export default function PronosticosPage() {
                     <div className="text-2xl mb-2">{getBandera(partido.equipoB)}</div>
                     <div className="text-sm font-bold text-white">{partido.nombreB}</div>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       min="0"
                       max="20"
                       value={pronostico?.golesB ?? ''}

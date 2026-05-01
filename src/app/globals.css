@@ -50,3 +50,24 @@ body {
     min-width: 44px;
   }
 }
+
+/* iOS Safe Areas - for home indicator / gesture bar */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.mb-safe {
+  margin-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Ensure main content respects safe areas */
+main {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* Extend touch targets to safe area on iOS */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .fixed.bottom-0 {
+    bottom: max(0, env(safe-area-inset-bottom));
+  }
+}

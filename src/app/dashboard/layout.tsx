@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <main className="flex-1">{children}</main>
 
-      <footer className="py-4 text-center text-xs text-slate-500">
+      <footer className="py-4 text-center text-xs text-slate-500 pb-safe">
         Powered by Firebase • Prode Mundial 2026
       </footer>
     </div>

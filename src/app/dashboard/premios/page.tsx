@@ -241,10 +241,10 @@ export default function PremiosPage() {
           </div>
         )}
 
-        {/* Goleador */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 mb-4">
+{/* Goleador */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
           <h2 className="text-lg font-bold text-white mb-4">⚽ Goleador del Torneo</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm text-slate-400 mb-2">País</label>
               <select
@@ -261,6 +261,96 @@ export default function PremiosPage() {
                 ))}
               </select>
             </div>
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <select
+                value={jugadorGoleador}
+                onChange={(e) => setJugadorGoleador(e.target.value)}
+                disabled={!paisGoleador}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Seleccioná un jugador</option>
+                {paisGoleador && JUGADORES_POR_PAIS[paisGoleador]?.map((j) => (
+                  <option key={j} value={j}>{j}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Asistidor */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
+          <h2 className="text-lg font-bold text-white mb-4">🅰️ Asistidor del Torneo</h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">País</label>
+              <select
+                value={paisAsistidor}
+                onChange={(e) => {
+                  setPaisAsistidor(e.target.value);
+                  setJugadorAsistidor('');
+                }}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                <option value="">Seleccioná un país</option>
+                {PAISES.map((pais) => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <select
+                value={jugadorAsistidor}
+                onChange={(e) => setJugadorAsistidor(e.target.value)}
+                disabled={!paisAsistidor}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Seleccioná un jugador</option>
+                {paisAsistidor && JUGADORES_POR_PAIS[paisAsistidor]?.map((j) => (
+                  <option key={j} value={j}>{j}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* MVP */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-6">
+          <h2 className="text-lg font-bold text-white mb-4">⭐ MVP del Torneo (Balón de Oro)</h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">País</label>
+              <select
+                value={paisMvp}
+                onChange={(e) => {
+                  setPaisMvp(e.target.value);
+                  setJugadorMvp('');
+                }}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                <option value="">Seleccioná un país</option>
+                {PAISES.map((pais) => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <select
+                value={jugadorMvp}
+                onChange={(e) => setJugadorMvp(e.target.value)}
+                disabled={!paisMvp}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Seleccioná un jugador</option>
+                {paisMvp && JUGADORES_POR_PAIS[paisMvp]?.map((j) => (
+                  <option key={j} value={j}>{j}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
             <div>
               <label className="block text-sm text-slate-400 mb-2">Jugador</label>
               <select
