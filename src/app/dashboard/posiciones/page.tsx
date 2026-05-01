@@ -388,33 +388,40 @@ export default function PosicionesPage() {
                           </div>
 
                           {/* Stats row */}
-                          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                             {/* Partidos jugados */}
-                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded flex items-center gap-1">
+                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
                               <Zap className="w-3 h-3" />
-                              {entry.totalJugados}/{totalPartidos}
+                              <span className="hidden sm:inline">{entry.totalJugados}/{totalPartidos}</span>
+                              <span className="sm:hidden">{entry.totalJugados}/{totalPartidos}</span>
                             </span>
 
                             {/* Exactos */}
-                            <span className="text-xs text-green-400 flex items-center gap-0.5">
-                              <Target className="w-3 h-3" />
-                              {entry.exactos}
+                            <span className="flex items-center gap-0.5">
+                              <span className="hidden sm:inline text-xs text-green-400 flex items-center gap-0.5">
+                                <Target className="w-3 h-3" />{entry.exactos}
+                              </span>
+                              <span className="sm:hidden text-xs bg-green-400/20 text-green-400 px-1.5 py-0.5 rounded font-medium">{entry.exactos}E</span>
                             </span>
 
                             {/* Winners */}
-                            <span className="text-xs text-blue-400 flex items-center gap-0.5">
-                              <TrendingUp className="w-3 h-3" />
-                              {entry.winners}
+                            <span className="flex items-center gap-0.5">
+                              <span className="hidden sm:inline text-xs text-blue-400 flex items-center gap-0.5">
+                                <TrendingUp className="w-3 h-3" />{entry.winners}
+                              </span>
+                              <span className="sm:hidden text-xs bg-blue-400/20 text-blue-400 px-1.5 py-0.5 rounded font-medium">{entry.winners}W</span>
                             </span>
 
                             {/* Errados */}
-                            <span className="text-xs text-red-400 flex items-center gap-0.5">
-                              <XCircle className="w-3 h-3" />
-                              {entry.perdidos}
+                            <span className="flex items-center gap-0.5">
+                              <span className="hidden sm:inline text-xs text-red-400 flex items-center gap-0.5">
+                                <XCircle className="w-3 h-3" />{entry.perdidos}
+                              </span>
+                              <span className="sm:hidden text-xs bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded font-medium">{entry.perdidos}X</span>
                             </span>
 
                             {/* Efectividad */}
-                            <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                            <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                               entry.efectividad >= 70 ? 'bg-green-400/20 text-green-400' :
                               entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
                               'bg-red-400/20 text-red-400'
