@@ -34,6 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/dashboard/pronosticos', label: 'Pronósticos', icon: Target },
     { href: '/dashboard/posiciones', label: 'Posiciones', icon: BarChart3 },
+    { href: '/dashboard/premios', label: 'Premios', icon: Trophy },
   ];
 
   return (
