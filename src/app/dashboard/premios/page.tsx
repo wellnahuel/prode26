@@ -116,9 +116,11 @@ export default function PremiosPage() {
   useEffect(() => {
     if (!user) return;
 
+    const userId = user.uid;
+
     async function cargarExistentes() {
       try {
-        const q = query(collection(db, 'pronosticosPremios'), where('usuarioId', '==', user.uid));
+        const q = query(collection(db, 'pronosticosPremios'), where('usuarioId', '==', userId));
         const snap = await getDocs(q);
 
         snap.forEach((docSnap) => {
