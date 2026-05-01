@@ -388,27 +388,27 @@ export default function PosicionesPage() {
                           </div>
 
                           {/* Stats row */}
-                          <div className="flex items-center gap-3 mt-1 flex-wrap">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                             {/* Partidos jugados */}
-                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
+                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded flex items-center gap-1">
                               <Zap className="w-3 h-3" />
                               {entry.totalJugados}/{totalPartidos}
                             </span>
 
                             {/* Exactos */}
-                            <span className="text-xs text-green-400 flex items-center gap-1">
+                            <span className="text-xs text-green-400 flex items-center gap-0.5">
                               <Target className="w-3 h-3" />
                               {entry.exactos}
                             </span>
 
                             {/* Winners */}
-                            <span className="text-xs text-blue-400 flex items-center gap-1">
+                            <span className="text-xs text-blue-400 flex items-center gap-0.5">
                               <TrendingUp className="w-3 h-3" />
                               {entry.winners}
                             </span>
 
                             {/* Errados */}
-                            <span className="text-xs text-red-400 flex items-center gap-1">
+                            <span className="text-xs text-red-400 flex items-center gap-0.5">
                               <XCircle className="w-3 h-3" />
                               {entry.perdidos}
                             </span>
@@ -419,37 +419,37 @@ export default function PosicionesPage() {
                               entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
                               'bg-red-400/20 text-red-400'
                             }`}>
-                              {entry.efectividad}% ef.
+                              {entry.efectividad}%
                             </span>
                           </div>
                         </div>
 
                         {/* Distancia al líder */}
                         {entry.distanciaLider > 0 && (
-                          <div className="text-right">
+                          <div className="text-right shrink-0">
                             <p className="text-xs text-slate-400">del líder</p>
                             <p className="text-sm font-medium text-red-400">
-                              -{entry.distanciaLider} pts
+                              -{entry.distanciaLider}
                             </p>
                           </div>
                         )}
 
                         {entry.distanciaLider === 0 && posicion === 1 && (
-                          <div className="text-right">
-                            <p className="text-xs text-amber-400">🏆 Líder</p>
+                          <div className="text-right shrink-0">
+                            <p className="text-xs text-amber-400">🏆</p>
                           </div>
                         )}
 
                         {/* Puntos */}
-                        <div className="text-right min-w-[60px]">
-                          <p className="text-xl font-bold text-amber-400">{entry.puntosTotales}</p>
+                        <div className="text-right shrink-0 min-w-[50px]">
+                          <p className="text-lg sm:text-xl font-bold text-amber-400">{entry.puntosTotales}</p>
                           <p className="text-xs text-slate-400">pts</p>
                         </div>
 
                         {/* Expand button */}
                         <button
                           onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
-                          className="px-4 py-2 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          className="px-3 py-2 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
                         >
                           {isExpanded ? '▲' : '▼'}
                         </button>
@@ -458,7 +458,7 @@ export default function PosicionesPage() {
 
                     {/* Detalles expandidos */}
                     {isExpanded && detalles[entry.usuarioId] && (
-                      <div className="mx-4 mb-2 bg-slate-900/50 border border-slate-700 rounded-xl p-4 space-y-3">
+                      <div className="mx-0 sm:mx-4 mb-3 bg-slate-900/50 border border-slate-700 rounded-xl p-4 space-y-3">
                         {detalles[entry.usuarioId].exactosList.length > 0 && (
                           <div>
                             <p className="text-xs text-green-400 font-medium mb-1 flex items-center gap-1">
