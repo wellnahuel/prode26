@@ -5,18 +5,22 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { Usuario, Partido, Pronostico, calcularPuntos } from '@/types';
-import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle, Zap } from 'lucide-react';
+import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle, Zap, Award } from 'lucide-react';
 
 interface LeaderboardEntry {
   usuarioId: string;
   displayName: string;
   puntosTotales: number;
+  puntosPartidos: number;
+  puntosPremios: number;
   exactos: number;
   winners: number;
   perdidos: number;
   totalJugados: number;
   efectividad: number;
   distanciaLider: number;
+  premiosAcertados: number;
+  totalPremios: number;
 }
 
 interface DetalleUsuario {
@@ -24,6 +28,15 @@ interface DetalleUsuario {
   winnersList: string[];
   perdidosList: string[];
 }
+
+// Resultados reales de premios (para comparar con predicciones)
+// Estos vendrían de Firestore si tuviéramos admin para cargarlos
+// Por ahora hardcodeado para el Mundial 2026
+const PREMIOS_REALES = {
+  goleador: 'Lionel Messi',
+  asistidor: 'Kevin De Bruyne',
+  mvp: 'Lionel Messi',
+};
 
 export default function PosicionesPage() {
   const { user } = useAuth();
@@ -33,6 +46,7 @@ export default function PosicionesPage() {
   const [loading, setLoading] = useState(true);
   const [miPosicion, setMiPosicion] = useState<number | null>(null);
   const [totalPartidos, setTotalPartidos] = useState(0);
+  const [partidosConPremio, setPartidosConPremio] = useState(false);
 
   useEffect(() => {
     async function calcularLeaderboard() {
@@ -62,12 +76,25 @@ export default function PosicionesPage() {
           ...doc.data(),
         })) as Pronostico[];
 
+        // Obtener pronósticos de premios
+        const premiosSnap = await getDocs(collection(db, 'pronosticosPremios'));
+        const premios = premiosSnap.docs.map((doc) => ({
+          id: doc.id,
+          usuarioId: doc.data().usuarioId,
+          tipo: doc.data().tipo,
+          valorPredicho: doc.data().valorPredicho,
+        }));
+
+        // Verificar si hay premios cargados para mostrar la sección
+        const hayPremios = partidosJugados.length > 0 && premios.length > 0;
+        setPartidosConPremio(hayPremios);
+
         // Calcular puntos y detalles por usuario
         const resultados: LeaderboardEntry[] = [];
         const detallesMap: Record<string, DetalleUsuario> = {};
 
         for (const usuario of usuarios) {
-          let puntosTotales = 0;
+          let puntosPartidos = 0;
           let exactos = 0;
           let winners = 0;
           let perdidos = 0;
@@ -84,7 +111,7 @@ export default function PosicionesPage() {
             if (partido && partido.resultado) {
               totalJugados++;
               const puntos = calcularPuntos(pronostico, partido);
-              puntosTotales += puntos;
+              puntosPartidos += puntos;
 
               const { golesA: realA, golesB: realB } = partido.resultado;
               const nombrePartido = `${partido.equipoA} vs ${partido.equipoB}`;
@@ -119,6 +146,25 @@ export default function PosicionesPage() {
             }
           }
 
+          // Calcular puntos de premios (si hay partidos jugados)
+          let puntosPremios = 0;
+          let premiosAcertados = 0;
+          const totalPremios = 3;
+
+          if (partidosJugados.length > 0) {
+            const misPremios = premios.filter((p) => p.usuarioId === usuario.uid);
+
+            for (const premio of misPremios) {
+              const valorReal = PREMIOS_REALES[premio.tipo as keyof typeof PREMIOS_REALES];
+              if (valorReal && premio.valorPredicho === valorReal) {
+                puntosPremios += 5;
+                premiosAcertados++;
+              }
+            }
+          }
+
+          const puntosTotales = puntosPartidos + puntosPremios;
+
           // Efectividad = (exactos + winners) / totalJugados
           const efectividad = totalJugados > 0
             ? Math.round(((exactos + winners) / totalJugados) * 100)
@@ -128,18 +174,22 @@ export default function PosicionesPage() {
             usuarioId: usuario.uid,
             displayName: usuario.displayName,
             puntosTotales,
+            puntosPartidos,
+            puntosPremios,
             exactos,
             winners,
             perdidos,
             totalJugados,
             efectividad,
             distanciaLider: 0, // Se calcula después de ordenar
+            premiosAcertados,
+            totalPremios,
           });
 
           detallesMap[usuario.uid] = { exactosList, winnersList, perdidosList };
         }
 
-        // Ordenar por puntos
+        // Ordenar por puntos totales
         resultados.sort((a, b) => {
           if (b.puntosTotales !== a.puntosTotales) {
             return b.puntosTotales - a.puntosTotales;
@@ -204,16 +254,32 @@ export default function PosicionesPage() {
         {/* Mi posición */}
         {miPosicion && (
           <div className="bg-gradient-to-r from-amber-400/20 to-amber-500/10 border border-amber-400/30 rounded-2xl p-4 mb-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <p className="text-sm text-slate-300">Tu posición</p>
                 <p className="text-3xl font-bold text-amber-400">{miPosicion}° lugar</p>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-slate-300">Puntos</p>
-                <p className="text-2xl font-bold text-white">
-                  {leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosTotales || 0}
-                </p>
+              <div className="flex gap-6">
+                <div className="text-right">
+                  <p className="text-sm text-slate-300">Puntos Partidos</p>
+                  <p className="text-xl font-bold text-white">
+                    {leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosPartidos || 0}
+                  </p>
+                </div>
+                {partidosConPremio && (
+                  <div className="text-right">
+                    <p className="text-sm text-slate-300">Puntos Premios</p>
+                    <p className="text-xl font-bold text-green-400">
+                      +{leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosPremios || 0}
+                    </p>
+                  </div>
+                )}
+                <div className="text-right">
+                  <p className="text-sm text-slate-300">Total</p>
+                  <p className="text-2xl font-bold text-white">
+                    {leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosTotales || 0}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -265,7 +331,7 @@ export default function PosicionesPage() {
                       </div>
                     </div>
 
-                    {/* Extra stats: efectividad, distancia, partidos */}
+                    {/* Extra stats: efectividad, distancia, partidos, premios */}
                     <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 mt-3 pt-3 border-t border-slate-700">
                       <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded flex items-center gap-1">
                         <Zap className="w-3 h-3" />
@@ -278,6 +344,12 @@ export default function PosicionesPage() {
                       }`}>
                         {entry.efectividad}%
                       </span>
+                      {partidosConPremio && (
+                        <span className="text-xs bg-purple-400/20 text-purple-400 px-1.5 py-0.5 rounded flex items-center gap-1">
+                          <Award className="w-3 h-3" />
+                          {entry.premiosAcertados}/{entry.totalPremios}
+                        </span>
+                      )}
                       {entry.distanciaLider > 0 && (
                         <span className="text-xs text-red-400">
                           -{entry.distanciaLider}
@@ -372,8 +444,8 @@ export default function PosicionesPage() {
                       }`}
                     >
                       {/* Fila principal */}
-                      <div className="flex items-center gap-3 sm:gap-4">
-                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300 shrink-0">
                           {posicion}
                         </div>
 
@@ -390,7 +462,7 @@ export default function PosicionesPage() {
                           {/* Stats row */}
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                             {/* Partidos jugados */}
-                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
+                            <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded flex items-center gap-1">
                               <Zap className="w-3 h-3" />
                               <span className="hidden sm:inline">{entry.totalJugados}/{totalPartidos}</span>
                               <span className="sm:hidden">{entry.totalJugados}/{totalPartidos}</span>
@@ -428,6 +500,15 @@ export default function PosicionesPage() {
                             }`}>
                               {entry.efectividad}%
                             </span>
+
+                            {/* Premios */}
+                            {partidosConPremio && (
+                              <span className="text-xs bg-purple-400/20 text-purple-400 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                <Award className="w-3 h-3" />
+                                <span className="hidden sm:inline">{entry.premiosAcertados}/{entry.totalPremios}</span>
+                                <span className="sm:hidden">{entry.premiosAcertados}/{entry.totalPremios}</span>
+                              </span>
+                            )}
                           </div>
                         </div>
 
