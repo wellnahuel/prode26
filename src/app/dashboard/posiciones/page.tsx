@@ -221,7 +221,7 @@ export default function PosicionesPage() {
 
         {/* Top 3 podium */}
         {leaderboard.length >= 1 && (
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 xs:grid-cols-3 gap-4 mb-6">
             {leaderboard.slice(0, 3).map((entry, idx) => {
               const medals = ['🥇', '🥈', '🥉'];
               const bgColors = [
@@ -249,42 +249,42 @@ export default function PosicionesPage() {
                       <p className="text-xs text-slate-400">puntos</p>
                     </div>
 
-                    {/* Mini stats */}
-                    <div className="grid grid-cols-3 gap-1 mt-3 pt-3 border-t border-slate-700">
+                    {/* Mini stats - Desktop: show labels, Mobile: compact badges */}
+                    <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-3 pt-3 border-t border-slate-700">
                       <div className="text-center">
-                        <p className="text-lg font-bold text-green-400">{entry.exactos}</p>
-                        <p className="text-xs text-slate-400">Exactos</p>
+                        <p className="text-lg sm:text-xl font-bold text-green-400">{entry.exactos}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">Exactos</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-bold text-blue-400">{entry.winners}</p>
-                        <p className="text-xs text-slate-400">Winners</p>
+                        <p className="text-lg sm:text-xl font-bold text-blue-400">{entry.winners}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">Winners</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-bold text-red-400">{entry.perdidos}</p>
-                        <p className="text-xs text-slate-400">Errados</p>
+                        <p className="text-lg sm:text-xl font-bold text-red-400">{entry.perdidos}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">Errados</p>
                       </div>
                     </div>
 
                     {/* Extra stats: efectividad, distancia, partidos */}
-                    <div className="flex items-center justify-center gap-3 mt-3 pt-3 border-t border-slate-700 flex-wrap">
-                      <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
+                    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 mt-3 pt-3 border-t border-slate-700">
+                      <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         {entry.totalJugados}/{totalPartidos}
                       </span>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                         entry.efectividad >= 70 ? 'bg-green-400/20 text-green-400' :
                         entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
                         'bg-red-400/20 text-red-400'
                       }`}>
-                        {entry.efectividad}% ef.
+                        {entry.efectividad}%
                       </span>
                       {entry.distanciaLider > 0 && (
                         <span className="text-xs text-red-400">
-                          -{entry.distanciaLider} pts
+                          -{entry.distanciaLider}
                         </span>
                       )}
                       {entry.distanciaLider === 0 && idx === 0 && (
-                        <span className="text-xs text-amber-400">🏆 Líder</span>
+                        <span className="text-xs text-amber-400">🏆</span>
                       )}
                     </div>
 
