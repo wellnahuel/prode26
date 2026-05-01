@@ -4,94 +4,98 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Save, Check, X, Trophy, Globe } from 'lucide-react';
+import { Save, Check, X, Trophy } from 'lucide-react';
 
-// Estructura: país -> lista de mejores jugadores
 const JUGADORES_POR_PAIS: Record<string, string[]> = {
-  'Argentina': [
+  Argentina: [
     'Lionel Messi', 'Lautaro Martínez', 'Julian Álvarez', 'Ángel Di María',
     'Cristian Romero', 'Lisandro Martínez', 'Rodrigo De Paul', 'Giovani Lo Celso',
     'Exequiel Palacios', 'Nicolás Otamendi', 'Emiliano Martínez', 'Germán Pezzella',
   ],
-  'Brasil': [
+  Brasil: [
     'Neymar Jr', 'Vinicius Jr', 'Rodri', 'Raphinha', 'Antony',
     'Casemiro', 'Fred', 'Gabriel Jesus', 'Marquinhos', 'Thiago Silva',
     'Alisson Becker', 'Éder Militão',
   ],
-  'Francia': [
+  Francia: [
     'Kylian Mbappé', 'Antoine Griezmann', 'Ousmane Dembélé', 'Kingsley Coman',
-    'Eduardo Camavinga', 'Aurélien Tchouaméni', 'N\'Golo Kanté', 'Blaise Matuidi',
+    'Eduardo Camavinga', 'Aurélien Tchouaméni', "N'Golo Kanté", 'Blaise Matuidi',
     'Raphaël Varane', 'William Saliba', 'Hugo Lloris', 'Theo Hernandez',
   ],
-  'Inglaterra': [
+  Inglaterra: [
     'Harry Kane', 'Phil Foden', 'Bukayo Saka', 'Marcus Rashford', 'Jack Grealish',
     'Declan Rice', 'Jude Bellingham', 'Mason Mount', 'Kyle Walker', 'John Stones',
     'Jordan Pickford', 'Trent Alexander-Arnold',
   ],
-  'España': [
+  España: [
     'Pedri', 'Gavi', 'Rodri', 'Ferran Torres', 'Lamine Yamal',
     'Dani Olmo', 'Mikel Oyarzabal', 'Aymeric Laporte', 'Robin Le Normand',
     'Dani Carvajal', 'Unai Simón', 'José Luis Gayà',
   ],
-  'Alemania': [
+  Alemania: [
     'Jamal Musiala', 'Florian Wirtz', 'Kai Havertz', 'Leroy Sané', 'Thomas Müller',
-    'Ilkay Gündogan', 'Toni Kroos', 'Joshua Kimmich', 'Antonio Rüdiger',
-    'Manuel Neuer', 'Jonathan Tah', 'Benedikt Süle',
+    'Ilkay Gündogan', 'Toni Kroos', 'Joshua Kimmich', 'Manuel Neuer', 'Jonathan Tah',
+    'Benedikt Süle', 'Antonio Rüdiger',
   ],
-  'Italia': [
+  Italia: [
     'Gianluigi Donnarumma', 'Gianluca Mancini', 'Alessandro Bastoni', 'Leonardo Bonucci',
     'Marcelo Brozovic', 'Nicolò Barella', 'Jorginho', 'Lorenzo Insigne',
     'Ciro Immobile', 'Gianluca Scamacca', 'Federico Chiesa', 'Manuel Locatelli',
   ],
-'Portugal': [
+  Portugal: [
     'Cristiano Ronaldo', 'Bruno Fernandes', 'Bernardo Silva', 'João Félix',
     'Rúben Neves', 'Otávio', 'William Carvalho', 'Nuno Mendes',
     'Rúben Dias', 'Pepe', 'Diogo Costa', 'Rafael Leão',
   ],
-  'Ghana': [
-    'Mohammed Kudus', 'Pierre Kunde', 'André Ayew', 'Jordan Ayew',
-    'Tariq Lamptey', 'Iddrisu Baba', 'Edo Abdul", "Daniel Kofi Kyereh',
-    'Lawrence Ati', 'Mason United', 'Danlad Asibri', 'Baba Rahman',
+  Uruguay: [
+    'Federico Valverde', 'Darwin Núñez', 'Luis Suárez', 'Rodrigo Bentancur',
+    'Mathías Olivera', 'José María Giménez', 'Ronald Araújo', 'Sebastián Coates',
+    'Martín Cáceres', 'Facundo Pellistri', 'Manuel Ugarte', 'Agustín Canobbio',
   ],
-  'Nigeria': [
-    'Victor Osimhen', 'Ademola Lookman', 'Kelechi Iheanacho', 'Samuel Chukwueze',
-    'Moses Simon', 'Wilfred Ndidi', 'Kamil', 'Olaoluwa Adefemi',
-    'Stanley Nwobili', 'Francis Uzoho', 'Chidozie Awaziem', 'Nelson Abe',
+  México: [
+    'Hirving Lozano', 'Santiago Giménez', 'Edson Álvarez', 'Andrés Guardado',
+    'Héctor Herrera', 'Jorge Sánchez', 'César Montes', 'Guillermo Ochoa',
+    'Uriel Antuna', 'Luis Chávez', 'Johan Vásquez', 'Érick Sánchez',
   ],
-  'Ecuador': [
-    'Enner Valencia', 'Pervis Estupiñán', 'Moisés Caicedo', 'Piero Hincapie',
-    'Jeremy Sarmiento', 'José Carranza', 'Alan Franco', 'Xavier Arretteaga',
-    'Hernán Galíndez', 'Romario Caicedo', 'Leonardo Realpe', 'Adriániez',
+  'Estados Unidos': [
+    'Christian Pulisic', 'Tyler Adams', 'Giovanni Reyna', 'Weston McKennie',
+    'Tim Weah', 'Sergiño Dest', 'Antonee Robinson', 'Cameron Carter-Vickers',
+    'Matt Turner', 'Brenden Aaronson', 'Luca De La Torre', 'Haji Wright',
   ],
-  'Colombia': [
-    'Luis Díaz', 'James Rodríguez', 'Juan Cuadrado', 'Radamel Falcao',
-    'Julián Álvarez', 'Mateo Kovačić', 'David Ospina', 'Yairo Muñoz',
-    'Jorman Mackenzie', 'Sebastián Gómez', 'Óscar Murcia', 'Jherson Cacique',
+  Japón: [
+    'Take Kubo', 'Daichi Kamada', 'Junya Ito', 'Kaoru Mitoma', 'Takehiro Tomiyasu',
+    'Wataru Endo', 'Hidemasa Morita', 'Ao Tanaka', 'Daizen Maeda', 'Ritsu Doan',
+    'Maya Yoshida', 'Shuichi Gonda',
   ],
-  'Chile': [
-    'Arturo Vidal', 'Gary Medel', 'Claudio Bravo', 'Marcelo Allende',
-    'Ben Brereton', 'Mauricio Isla', 'Gabriel Suazo', 'Gabriel Arias',
-    'Leonardo Gil', 'Julián Alfaro', 'Thomas Campodónico', 'Francesco Apostol',
+  'Corea del Sur': [
+    'Son Heung-min', 'Kim Min-jae', 'Lee Kang-in', 'Park Ji-sung', 'Hwang Hee-chan',
+    'Woo Jung-ho', 'Kim Young-gyu', 'Lee Jae-sung', 'Seol Ki-hyeon', 'Kang Sang-woo',
+    'Jung Woo-young', 'Kwon Chang-hoon',
   ],
-  'Perú': [
-    'Paolo Guerrero', 'André Carrillo', 'Lapadula', 'Cueva',
-    'Gallese', 'Valera', 'Trauco', 'Carlos Zambrano',
-    'Hidalgo', 'Polo', 'Cartí', 'Yotun',
+  'Países Bajos': [
+    'Virgil van Dijk', 'Frenkie de Jong', 'Memphis Depay', 'Cody Gakpo', 'Steven Bergwijn',
+    'Davy Klaassen', 'Georginio Wijnaldum', 'Denzel Dumfries', 'André Onana',
+    'Ryan Gravenberch', 'Xavi Simons', 'Jeremie Frimpong',
   ],
-  'Qatar': [
-    'Almoez Ali', 'Akram Afif', 'Hassan Al-Haydos', 'Al-Mehairi',
-    'Bassel', 'Khalid Mrogon', 'Abdelrazzaq', 'Salauddin',
-    'Jassem Gaber', 'Sultan Al-Breik', 'Meshaal Barsham', 'Al-Mehairi',
+  Bélgica: [
+    'Kevin De Bruyne', 'Romelu Lukaku', 'Jeremy Doku', 'Leandro Trossard', 'Youri Tielemans',
+    'Axel Witsel', 'Amadou Onana', 'Timothy Castagne', 'Jan Vertonghen', 'Toby Alderweireld',
+    'Thibaut Courtois', 'Koen Casteels',
   ],
-  'Arabia Saudita': [
-    'Saleh Al-Shehri', 'Feras Al-Brikan', ' Salem Al-Dawsari', 'Yasser Al-Shahrani',
-    'Mohammed Al-Olayan', 'Hattan Bahbri', 'Ali Al-Habsi', 'Yasser Al-Mosailem',
-    'Sami Al-Najei', 'Abdullah Al-Khaibari', 'Musab Al-Juwayr', 'Turki Al-Ammar',
+  Croacia: [
+    'Luka Modric', 'Ivan Rakitić', 'Marcelo Brozovic', 'Mateo Kovačić', 'Andrej Kramaric',
+    'Bruno Petkovic', 'Josip Stanišić', 'Domagoj Vida', 'Borna Sosa', 'Ivica Ivušic',
+    'Lovro Majer', 'Ante Budimir',
   ],
-  'Irán': [
-    'Sardar Azmoun', 'Mehdi Taremi', 'Jalal Hosseini', 'Alireza Jahanbakhsh',
-    'Roozbeh Cheshmi', 'Seyed Milad Salehi', 'Hossein Hosseini', 'Majid Hosseini',
-    'Rashid Mazaheri', 'Sadegh Moharrami', 'Ahmad Nourollahi', 'Ali Gholizadeh',
+  Marruecos: [
+    'Achraf Hakimi', 'Sofyan Amrabat', 'Hakim Ziyech', 'Youssef En-Nesyri', 'Azzedine Ounahi',
+    'Jawad El Yamiq', 'Yassine Bounou', 'Nayef Aguerd', 'Munir El Kajoui', 'Abdelhamid Sabiri',
+    'Ilias Chair', 'Abde Ezzalzouli',
+  ],
+  Senegal: [
+    'Kalidou Koulibaly', 'Idrissa Gueye', 'Nampalys Mendy', 'Boulley Dia', 'Ismaila Sarr',
+    'Krepin Diatta', 'Pape Gueye', 'Moussa Ndiaye', 'Edouard Mendy', 'Nicolas Jackson',
+    'Ilim Ndiaye', 'Fodayo Sylla',
   ],
 };
 
@@ -120,7 +124,6 @@ export default function PremiosPage() {
         snap.forEach((docSnap) => {
           const data = docSnap.data();
           if (data.tipo === 'goleador') {
-            // Buscar país del jugador
             for (const [pais, jugadores] of Object.entries(JUGADORES_POR_PAIS)) {
               if (jugadores.includes(data.valorPredicho)) {
                 setPaisGoleador(pais);
@@ -241,7 +244,6 @@ export default function PremiosPage() {
           </div>
         )}
 
-{/* Goleador */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
           <h2 className="text-lg font-bold text-white mb-4">⚽ Goleador del Torneo</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
@@ -278,7 +280,6 @@ export default function PremiosPage() {
           </div>
         </div>
 
-        {/* Asistidor */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
           <h2 className="text-lg font-bold text-white mb-4">🅰️ Asistidor del Torneo</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
@@ -315,100 +316,9 @@ export default function PremiosPage() {
           </div>
         </div>
 
-        {/* MVP */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-6">
           <h2 className="text-lg font-bold text-white mb-4">⭐ MVP del Torneo (Balón de Oro)</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">País</label>
-              <select
-                value={paisMvp}
-                onChange={(e) => {
-                  setPaisMvp(e.target.value);
-                  setJugadorMvp('');
-                }}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-              >
-                <option value="">Seleccioná un país</option>
-                {PAISES.map((pais) => (
-                  <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
-              <select
-                value={jugadorMvp}
-                onChange={(e) => setJugadorMvp(e.target.value)}
-                disabled={!paisMvp}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Seleccioná un jugador</option>
-                {paisMvp && JUGADORES_POR_PAIS[paisMvp]?.map((j) => (
-                  <option key={j} value={j}>{j}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
-              <select
-                value={jugadorGoleador}
-                onChange={(e) => setJugadorGoleador(e.target.value)}
-                disabled={!paisGoleador}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Seleccioná un jugador</option>
-                {paisGoleador && JUGADORES_POR_PAIS[paisGoleador]?.map((j) => (
-                  <option key={j} value={j}>{j}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Asistidor */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 mb-4">
-          <h2 className="text-lg font-bold text-white mb-4">🅰️ Asistidor del Torneo</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">País</label>
-              <select
-                value={paisAsistidor}
-                onChange={(e) => {
-                  setPaisAsistidor(e.target.value);
-                  setJugadorAsistidor('');
-                }}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-              >
-                <option value="">Seleccioná un país</option>
-                {PAISES.map((pais) => (
-                  <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
-              <select
-                value={jugadorAsistidor}
-                onChange={(e) => setJugadorAsistidor(e.target.value)}
-                disabled={!paisAsistidor}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Seleccioná un jugador</option>
-                {paisAsistidor && JUGADORES_POR_PAIS[paisAsistidor]?.map((j) => (
-                  <option key={j} value={j}>{j}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* MVP */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">⭐ MVP del Torneo (Balón de Oro)</h2>
-          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-slate-400 mb-2">País</label>
               <select
@@ -445,7 +355,7 @@ export default function PremiosPage() {
         <button
           onClick={guardar}
           disabled={guardando || !jugadorGoleador || !jugadorAsistidor || !jugadorMvp}
-          className="w-full py-4 px-6 bg-amber-400 hover:bg-amber-300 disabled:bg-amber-400/50 disabled:cursor-not-allowed text-slate-900 font-bold rounded-xl transition-all shadow-lg shadow-amber-400/20 flex items-center justify-center gap-3"
+          className="w-full py-4 bg-amber-400 hover:bg-amber-300 disabled:bg-amber-400/50 disabled:cursor-not-allowed text-slate-900 font-bold rounded-xl transition-all shadow-lg shadow-amber-400/20 flex items-center justify-center gap-3"
         >
           {guardando ? (
             <>
@@ -462,7 +372,7 @@ export default function PremiosPage() {
 
         {cargado && (
           <p className="text-center text-slate-400 text-sm mt-4">
-            ✓ Ya tenés tus premios cargados. Podés cambiarlos.
+            ✓ Ya tenés tus premios cargados
           </p>
         )}
       </main>
