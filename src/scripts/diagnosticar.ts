@@ -2,14 +2,14 @@
  * Script de diagnóstico: verificar datos y cálculos de puntos
  */
 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface Partido {
   id: string;
   fase: string;
   grupo: string;
-  fechaInicio: FirebaseFirestore.Timestamp;
+  fechaInicio: Timestamp;
   equipoA: string;
   equipoB: string;
   nombreA: string;
