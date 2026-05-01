@@ -7,6 +7,7 @@ import { Timestamp } from 'firebase/firestore';
 import { collection, addDoc, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ChevronLeft, ChevronRight, Save, Lock, Check, X } from 'lucide-react';
+import { getBandera } from '@/lib/banderas';
 
 const GRUPOS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
@@ -219,7 +220,8 @@ export default function PronosticosPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex-1 text-center">
-                    <div className="text-sm font-bold text-white mb-2">{partido.nombreA}</div>
+                    <div className="text-2xl mb-2">{getBandera(partido.equipoA)}</div>
+                    <div className="text-sm font-bold text-white">{partido.nombreA}</div>
                     <input
                       type="number"
                       min="0"
@@ -237,7 +239,8 @@ export default function PronosticosPage() {
                   <div className="px-6 text-slate-500 font-bold text-xl">X</div>
 
                   <div className="flex-1 text-center">
-                    <div className="text-sm font-bold text-white mb-2">{partido.nombreB}</div>
+                    <div className="text-2xl mb-2">{getBandera(partido.equipoB)}</div>
+                    <div className="text-sm font-bold text-white">{partido.nombreB}</div>
                     <input
                       type="number"
                       min="0"
