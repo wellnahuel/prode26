@@ -265,6 +265,29 @@ export default function PosicionesPage() {
                       </div>
                     </div>
 
+                    {/* Extra stats: efectividad, distancia, partidos */}
+                    <div className="flex items-center justify-center gap-3 mt-3 pt-3 border-t border-slate-700 flex-wrap">
+                      <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
+                        <Zap className="w-3 h-3" />
+                        {entry.totalJugados}/{totalPartidos}
+                      </span>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                        entry.efectividad >= 70 ? 'bg-green-400/20 text-green-400' :
+                        entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
+                        'bg-red-400/20 text-red-400'
+                      }`}>
+                        {entry.efectividad}% ef.
+                      </span>
+                      {entry.distanciaLider > 0 && (
+                        <span className="text-xs text-red-400">
+                          -{entry.distanciaLider} pts
+                        </span>
+                      )}
+                      {entry.distanciaLider === 0 && idx === 0 && (
+                        <span className="text-xs text-amber-400">🏆 Líder</span>
+                      )}
+                    </div>
+
                     <button
                       onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
                       className="w-full mt-3 py-2 text-xs bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
