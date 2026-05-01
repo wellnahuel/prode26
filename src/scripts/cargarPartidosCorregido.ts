@@ -3,7 +3,7 @@
  * Arregla el problema de partidoId que no coincidía
  */
 
-import { collection, addDoc, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { PARTIDOS_GRUPOS } from '@/data/partidos';
 
