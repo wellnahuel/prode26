@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <nav className="bg-slate-800/50 border-b border-slate-700">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="flex gap-1 overflow-x-auto py-2">
+          <div className="flex gap-1 overflow-x-auto py-2 scrollbar-hide">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -81,8 +81,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     isActive ? 'bg-amber-400 text-slate-900' : 'text-slate-400 hover:text-white hover:bg-slate-700'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {item.label}
+                  <Icon className="w-5 h-5" />
+                  <span className="hidden sm:inline">{item.label}</span>
                 </Link>
               );
             })}
