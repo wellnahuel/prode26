@@ -60,10 +60,21 @@ export default function PosicionesPage() {
 
         // Obtener TODOS los partidos (para saber el total)
         const partidosSnap = await getDocs(collection(db, 'partidos'));
-        const partidos = partidosSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Partido;
+        const partidos = partidosSnap.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            fase: data.fase,
+            grupo: data.grupo,
+            fechaInicio: data.fechaInicio,
+            equipoA: data.equipoA,
+            equipoB: data.equipoB,
+            nombreA: data.nombreA,
+            nombreB: data.nombreB,
+            resultado: data.resultado,
+            estadio: data.estadio,
+          } as Partido;
+        });
         setTotalPartidos(partidos.length);
 
         // Obtener partidos jugados (con resultado)
