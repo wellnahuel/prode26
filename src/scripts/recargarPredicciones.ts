@@ -42,8 +42,9 @@ async function recargarPredicciones() {
 
   // Regenerar predicciones para cada usuario
   for (const usuarioDoc of usuariosSnap.docs) {
-    const usuario = { uid: usuarioDoc.id, ...usuarioDoc.data() };
-    console.log(`\n👤 Usuario: ${usuario.displayName || usuario.email}`);
+    const data = usuarioDoc.data();
+    const usuario = { uid: usuarioDoc.id, displayName: data.displayName || data.email };
+    console.log(`\n👤 Usuario: ${usuario.displayName}`);
 
     for (const partido of partidos) {
       // Generar predicción aleatoria
