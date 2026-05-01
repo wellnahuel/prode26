@@ -5,7 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { Usuario, Partido, Pronostico, calcularPuntos } from '@/types';
-import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
+import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle, Zap } from 'lucide-react';
 
 interface LeaderboardEntry {
   usuarioId: string;
@@ -15,6 +15,8 @@ interface LeaderboardEntry {
   winners: number;
   perdidos: number;
   totalJugados: number;
+  efectividad: number;
+  distanciaLider: number;
 }
 
 interface DetalleUsuario {
@@ -30,6 +32,7 @@ export default function PosicionesPage() {
   const [usuarioExpandido, setUsuarioExpandido] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [miPosicion, setMiPosicion] = useState<number | null>(null);
+  const [totalPartidos, setTotalPartidos] = useState(0);
 
   useEffect(() => {
     async function calcularLeaderboard() {
@@ -41,11 +44,16 @@ export default function PosicionesPage() {
           ...doc.data(),
         })) as Usuario[];
 
-        // Obtener partidos jugados (con resultado)
+        // Obtener TODOS los partidos (para saber el total)
         const partidosSnap = await getDocs(collection(db, 'partidos'));
-        const partidos = partidosSnap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() } as Partido))
-          .filter((p) => p.resultado);
+        const partidos = partidosSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Partido;
+        setTotalPartidos(partidos.length);
+
+        // Obtener partidos jugados (con resultado)
+        const partidosJugados = partidos.filter((p) => p.resultado);
 
         // Obtener todos los pronósticos
         const pronosticosSnap = await getDocs(collection(db, 'pronosticos'));
@@ -111,6 +119,11 @@ export default function PosicionesPage() {
             }
           }
 
+          // Efectividad = (exactos + winners) / totalJugados
+          const efectividad = totalJugados > 0
+            ? Math.round(((exactos + winners) / totalJugados) * 100)
+            : 0;
+
           resultados.push({
             usuarioId: usuario.uid,
             displayName: usuario.displayName,
@@ -119,12 +132,14 @@ export default function PosicionesPage() {
             winners,
             perdidos,
             totalJugados,
+            efectividad,
+            distanciaLider: 0, // Se calcula después de ordenar
           });
 
           detallesMap[usuario.uid] = { exactosList, winnersList, perdidosList };
         }
 
-        // Ordenar
+        // Ordenar por puntos
         resultados.sort((a, b) => {
           if (b.puntosTotales !== a.puntosTotales) {
             return b.puntosTotales - a.puntosTotales;
@@ -133,6 +148,12 @@ export default function PosicionesPage() {
             return b.exactos - a.exactos;
           }
           return b.winners - a.winners;
+        });
+
+        // Calcular distancia al líder
+        const liderPuntos = resultados.length > 0 ? resultados[0].puntosTotales : 0;
+        resultados.forEach((r) => {
+          r.distanciaLider = liderPuntos - r.puntosTotales;
         });
 
         setLeaderboard(resultados);
@@ -323,45 +344,93 @@ export default function PosicionesPage() {
                 return (
                   <div key={entry.usuarioId} className="space-y-2">
                     <div
-                      className={`p-4 flex items-center gap-4 ${
+                      className={`p-4 ${
                         entry.usuarioId === user?.uid ? 'bg-amber-400/10' : ''
                       }`}
                     >
-                      <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300">
-                        {posicion}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-white">
-                          {entry.displayName}
-                          {entry.usuarioId === user?.uid && (
-                            <span className="ml-2 text-xs text-amber-400">(Vos)</span>
-                          )}
-                        </p>
-                        <div className="flex gap-4 text-xs mt-1">
-                          <span className="flex items-center gap-1 text-green-400">
-                            <Target className="w-3 h-3" />
-                            {entry.exactos} exactos
-                          </span>
-                          <span className="flex items-center gap-1 text-blue-400">
-                            <TrendingUp className="w-3 h-3" />
-                            {entry.winners} winners
-                          </span>
-                          <span className="flex items-center gap-1 text-red-400">
-                            <XCircle className="w-3 h-3" />
-                            {entry.perdidos} errados
-                          </span>
+                      {/* Fila principal */}
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300">
+                          {posicion}
                         </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-medium text-white truncate">
+                              {entry.displayName}
+                            </p>
+                            {entry.usuarioId === user?.uid && (
+                              <span className="text-xs text-amber-400">(Vos)</span>
+                            )}
+                          </div>
+
+                          {/* Stats row */}
+                          <div className="flex items-center gap-3 mt-1 flex-wrap">
+                            {/* Partidos jugados */}
+                            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded flex items-center gap-1">
+                              <Zap className="w-3 h-3" />
+                              {entry.totalJugados}/{totalPartidos}
+                            </span>
+
+                            {/* Exactos */}
+                            <span className="text-xs text-green-400 flex items-center gap-1">
+                              <Target className="w-3 h-3" />
+                              {entry.exactos}
+                            </span>
+
+                            {/* Winners */}
+                            <span className="text-xs text-blue-400 flex items-center gap-1">
+                              <TrendingUp className="w-3 h-3" />
+                              {entry.winners}
+                            </span>
+
+                            {/* Errados */}
+                            <span className="text-xs text-red-400 flex items-center gap-1">
+                              <XCircle className="w-3 h-3" />
+                              {entry.perdidos}
+                            </span>
+
+                            {/* Efectividad */}
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                              entry.efectividad >= 70 ? 'bg-green-400/20 text-green-400' :
+                              entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
+                              'bg-red-400/20 text-red-400'
+                            }`}>
+                              {entry.efectividad}% ef.
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Distancia al líder */}
+                        {entry.distanciaLider > 0 && (
+                          <div className="text-right">
+                            <p className="text-xs text-slate-400">del líder</p>
+                            <p className="text-sm font-medium text-red-400">
+                              -{entry.distanciaLider} pts
+                            </p>
+                          </div>
+                        )}
+
+                        {entry.distanciaLider === 0 && posicion === 1 && (
+                          <div className="text-right">
+                            <p className="text-xs text-amber-400">🏆 Líder</p>
+                          </div>
+                        )}
+
+                        {/* Puntos */}
+                        <div className="text-right min-w-[60px]">
+                          <p className="text-xl font-bold text-amber-400">{entry.puntosTotales}</p>
+                          <p className="text-xs text-slate-400">pts</p>
+                        </div>
+
+                        {/* Expand button */}
+                        <button
+                          onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
+                          className="px-3 py-1 text-xs bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
+                        >
+                          {isExpanded ? '▲' : '▼'}
+                        </button>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-amber-400">{entry.puntosTotales}</p>
-                        <p className="text-xs text-slate-400">pts</p>
-                      </div>
-                      <button
-                        onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
-                        className="px-3 py-1 text-xs bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
-                      >
-                        {isExpanded ? '▲' : '▼'}
-                      </button>
                     </div>
 
                     {/* Detalles expandidos */}
