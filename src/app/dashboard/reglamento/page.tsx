@@ -74,6 +74,23 @@ export default function ReglamentoPage() {
               <p className="text-sm text-slate-400 mt-3">
                 <span className="text-amber-400 font-medium">Máximo:</span> 360 puntos (todos exactos)
               </p>
+              <div className="bg-slate-600/30 rounded-lg p-3 mt-3">
+                <p className="text-xs text-slate-300 font-medium mb-1">📌 Caso de Empate (ej: 1-1)</p>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <span className="text-green-400">✅ Score exacto (1-1)</span>
+                    <br /><span className="text-slate-400">→ 5 puntos</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-400">🔵 Empate (0-0, 2-2)</span>
+                    <br /><span className="text-slate-400">→ 2 puntos (winner)</span>
+                  </div>
+                  <div>
+                    <span className="text-red-400">❌ Predijiste ganador</span>
+                    <br /><span className="text-slate-400">→ 0 puntos</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -97,12 +114,26 @@ export default function ReglamentoPage() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-slate-400">
+<p className="text-sm text-slate-400">
                 <span className="text-amber-400 font-medium">Fases:</span> 16avos, Octavos, Cuartos, Semifinales, Tercer Puesto, Final
               </p>
-              <p className="text-sm text-slate-400 mt-1">
-                <span className="text-amber-400 font-medium">Máximo:</span> 112 puntos (todos exactos)
-              </p>
+              <div className="bg-slate-600/30 rounded-lg p-3 mt-3">
+                <p className="text-xs text-slate-300 font-medium mb-1">📌 Caso de Empate (ej: 2-2)</p>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <span className="text-green-400">✅ Score exacto (2-2)</span>
+                    <br /><span className="text-slate-400">→ 7 puntos</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-400">🔵 Empate (1-1, 3-3)</span>
+                    <br /><span className="text-slate-400">→ 3 puntos (winner)</span>
+                  </div>
+                  <div>
+                    <span className="text-red-400">❌ Predijiste ganador</span>
+                    <br /><span className="text-slate-400">→ 0 puntos</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
