@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Trophy, Target, BarChart3, LogOut, Home } from 'lucide-react';
+import { Trophy, Target, BarChart3, LogOut, Home, Swords } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -33,6 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/dashboard/pronosticos', label: 'Pronósticos', icon: Target },
+    { href: '/dashboard/eliminatoria', label: 'Eliminatoria', icon: Swords },
     { href: '/dashboard/posiciones', label: 'Posiciones', icon: BarChart3 },
     { href: '/dashboard/premios', label: 'Premios', icon: Trophy },
   ];
