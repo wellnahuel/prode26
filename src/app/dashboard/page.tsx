@@ -41,12 +41,18 @@ export default function DashboardPage() {
           // Cargar partidos con resultado
           const partidosSnap = await getDocs(collection(db, 'partidos'));
           const partidosConResultado = partidosSnap.docs
-            .map((doc) => ({ id: doc.id, ...doc.data() }))
-            .filter((p: any) => p.resultado);
+            .map((doc) => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                resultado: data.resultado as { golesA: number; golesB: number } | null,
+              };
+            })
+            .filter((p) => p.resultado);
 
           let puntos = 0;
           for (const pronostico of pronosticos) {
-            const partido = partidosConResultado.find((p: any) => p.id === pronostico.partidoId);
+            const partido = partidosConResultado.find((p) => p.id === pronostico.partidoId);
             if (partido && partido.resultado) {
               const realA = partido.resultado.golesA;
               const realB = partido.resultado.golesB;
