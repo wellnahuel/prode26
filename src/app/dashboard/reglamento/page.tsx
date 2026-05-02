@@ -28,7 +28,7 @@ export default function ReglamentoPage() {
             ¿Cómo funciona el Prode 2026?
           </h2>
           <p className="text-slate-300">
-            Participá预测 los resultados del Mundial 2026 y competí con tus amigos. 
+            Participá los resultados del Mundial 2026 y competí con tus amigos. 
             Cuantos más aciertos, más puntos acumulás para llegar a la cima de la tabla.
           </p>
         </div>
