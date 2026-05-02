@@ -173,6 +173,39 @@ export default function PronosticosPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
+        {/* Info de puntos */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-6">
+          <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+            <span className="text-lg">📊</span> Sistema de Puntos - Fase de Grupos
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-green-400">5</p>
+              <p className="text-xs text-slate-400">Puntos</p>
+              <p className="text-xs text-slate-500 mt-1">Resultado exacto</p>
+            </div>
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-blue-400">2</p>
+              <p className="text-xs text-slate-400">Puntos</p>
+              <p className="text-xs text-slate-500 mt-1">Ganador + Score</p>
+            </div>
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-green-400">72</p>
+              <p className="text-xs text-slate-400">Partidos</p>
+              <p className="text-xs text-slate-500 mt-1">6 por grupo × 12</p>
+            </div>
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-amber-400">360</p>
+              <p className="text-xs text-slate-400">Puntos máx.</p>
+              <p className="text-xs text-slate-500 mt-1">Todos exactos</p>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-3">
+            <span className="text-green-400">✅ Exacto</span> = Score correcto | 
+            <span className="text-blue-400 ml-2">🔵 Winner</span> = Ganador (no importa score)
+          </p>
+        </div>
+
         {/* Mensaje */}
         {mensaje && (
           <div

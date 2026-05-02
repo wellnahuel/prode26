@@ -228,10 +228,31 @@ export default function PremiosPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6">
+        {/* Info de puntos */}
         <div className="bg-amber-400/10 border border-amber-400/20 rounded-2xl p-4 mb-6">
-          <p className="text-amber-400 font-medium mb-1">🏆 Pronosticá los premios individuales</p>
-          <p className="text-slate-300 text-sm">
-            Primero seleccioná el país, luego elegí al jugador. Ganá <span className="text-amber-400 font-bold">5 puntos</span> por cada acierto.
+          <h3 className="text-amber-400 font-medium mb-2">🏆 Premios Individuales</h3>
+          <p className="text-slate-300 text-sm mb-4">
+            Pronosticá los mejores jugadores del torneo. Acertá y sumá <span className="text-amber-400 font-bold">5 puntos</span> por cada uno.
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl">⚽</p>
+              <p className="text-sm text-white font-medium">Goleador</p>
+              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+            </div>
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl">🅰️</p>
+              <p className="text-sm text-white font-medium">Asistidor</p>
+              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+            </div>
+            <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+              <p className="text-2xl">⭐</p>
+              <p className="text-sm text-white font-medium">MVP</p>
+              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-3">
+            Máximo: <span className="text-green-400 font-medium">15 puntos</span> si acertás los 3 premios
           </p>
         </div>
 
