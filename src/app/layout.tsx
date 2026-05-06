@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Prode Mundial 2026",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="min-h-screen flex flex-col bg-slate-900 text-slate-50 antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   );

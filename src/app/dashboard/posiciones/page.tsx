@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Usuario, Partido, Pronostico, calcularPuntos } from '@/types';
 import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle, Zap, Award } from 'lucide-react';
 
@@ -30,8 +31,6 @@ interface DetalleUsuario {
 }
 
 // Resultados reales de premios (para comparar con predicciones)
-// Estos vendrían de Firestore si tuviéramos admin para cargarlos
-// Por ahora hardcodeado para el Mundial 2026
 const PREMIOS_REALES = {
   goleador: 'Lionel Messi',
   asistidor: 'Kevin De Bruyne',
@@ -40,6 +39,7 @@ const PREMIOS_REALES = {
 
 export default function PosicionesPage() {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [detalles, setDetalles] = useState<Record<string, DetalleUsuario>>({});
   const [usuarioExpandido, setUsuarioExpandido] = useState<string | null>(null);
@@ -51,14 +51,12 @@ export default function PosicionesPage() {
   useEffect(() => {
     async function calcularLeaderboard() {
       try {
-        // Obtener usuarios
         const usuariosSnap = await getDocs(collection(db, 'usuarios'));
         const usuarios = usuariosSnap.docs.map((doc) => ({
           uid: doc.id,
           ...doc.data(),
         })) as Usuario[];
 
-        // Obtener TODOS los partidos (para saber el total)
         const partidosSnap = await getDocs(collection(db, 'partidos'));
         const partidos = partidosSnap.docs.map((doc) => {
           const data = doc.data();
@@ -77,17 +75,14 @@ export default function PosicionesPage() {
         });
         setTotalPartidos(partidos.length);
 
-        // Obtener partidos jugados (con resultado)
         const partidosJugados = partidos.filter((p) => p.resultado);
 
-        // Obtener todos los pronósticos
         const pronosticosSnap = await getDocs(collection(db, 'pronosticos'));
         const pronosticos = pronosticosSnap.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Pronostico[];
 
-        // Obtener pronósticos de premios
         const premiosSnap = await getDocs(collection(db, 'pronosticosPremios'));
         const premios = premiosSnap.docs.map((doc) => ({
           id: doc.id,
@@ -96,11 +91,9 @@ export default function PosicionesPage() {
           valorPredicho: doc.data().valorPredicho,
         }));
 
-        // Verificar si hay premios cargados para mostrar la sección
         const hayPremios = partidosJugados.length > 0 && premios.length > 0;
         setPartidosConPremio(hayPremios);
 
-        // Calcular puntos y detalles por usuario
         const resultados: LeaderboardEntry[] = [];
         const detallesMap: Record<string, DetalleUsuario> = {};
 
@@ -157,7 +150,6 @@ export default function PosicionesPage() {
             }
           }
 
-          // Calcular puntos de premios (si hay partidos jugados)
           let puntosPremios = 0;
           let premiosAcertados = 0;
           const totalPremios = 3;
@@ -176,7 +168,6 @@ export default function PosicionesPage() {
 
           const puntosTotales = puntosPartidos + puntosPremios;
 
-          // Efectividad = (exactos + winners) / totalJugados
           const efectividad = totalJugados > 0
             ? Math.round(((exactos + winners) / totalJugados) * 100)
             : 0;
@@ -192,7 +183,7 @@ export default function PosicionesPage() {
             perdidos,
             totalJugados,
             efectividad,
-            distanciaLider: 0, // Se calcula después de ordenar
+            distanciaLider: 0,
             premiosAcertados,
             totalPremios,
           });
@@ -200,7 +191,6 @@ export default function PosicionesPage() {
           detallesMap[usuario.uid] = { exactosList, winnersList, perdidosList };
         }
 
-        // Ordenar por puntos totales
         resultados.sort((a, b) => {
           if (b.puntosTotales !== a.puntosTotales) {
             return b.puntosTotales - a.puntosTotales;
@@ -211,7 +201,6 @@ export default function PosicionesPage() {
           return b.winners - a.winners;
         });
 
-        // Calcular distancia al líder
         const liderPuntos = resultados.length > 0 ? resultados[0].puntosTotales : 0;
         resultados.forEach((r) => {
           r.distanciaLider = liderPuntos - r.puntosTotales;
@@ -232,14 +221,14 @@ export default function PosicionesPage() {
     }
 
     calcularLeaderboard();
-  }, [user]);
+  }, [user, t, language]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-400 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-slate-400">Calculando posiciones...</p>
+          <p className="text-slate-400">{t.cargando}</p>
         </div>
       </div>
     );
@@ -247,46 +236,43 @@ export default function PosicionesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
       <header className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Trophy className="w-8 h-8 text-amber-400" />
             <div>
-              <h1 className="text-xl font-bold text-white">Clasificación General</h1>
-              <p className="text-xs text-slate-400">Mundial 2026 • Detalle de aciertos</p>
+              <h1 className="text-xl font-bold text-white">{t.clasificacionGeneral}</h1>
+              <p className="text-xs text-slate-400">{t.mundial2026DetalleDeAciertos}</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
-        {/* Mi posición */}
         {miPosicion && (
           <div className="bg-gradient-to-r from-amber-400/20 to-amber-500/10 border border-amber-400/30 rounded-2xl p-4 mb-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <p className="text-sm text-slate-300">Tu posición</p>
-                <p className="text-3xl font-bold text-amber-400">{miPosicion}° lugar</p>
+                <p className="text-sm text-slate-300">{t.tuPosicion}</p>
+                <p className="text-3xl font-bold text-amber-400">{miPosicion}° {t.lugar}</p>
               </div>
               <div className="flex gap-6">
                 <div className="text-right">
-                  <p className="text-sm text-slate-300">Puntos Partidos</p>
+                  <p className="text-sm text-slate-300">{t.puntosPartidos}</p>
                   <p className="text-xl font-bold text-white">
                     {leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosPartidos || 0}
                   </p>
                 </div>
                 {partidosConPremio && (
                   <div className="text-right">
-                    <p className="text-sm text-slate-300">Puntos Premios</p>
+                    <p className="text-sm text-slate-300">{t.puntosPremios}</p>
                     <p className="text-xl font-bold text-green-400">
                       +{leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosPremios || 0}
                     </p>
                   </div>
                 )}
                 <div className="text-right">
-                  <p className="text-sm text-slate-300">Total</p>
+                  <p className="text-sm text-slate-300">{t.total}</p>
                   <p className="text-2xl font-bold text-white">
                     {leaderboard.find((r) => r.usuarioId === user?.uid)?.puntosTotales || 0}
                   </p>
@@ -296,7 +282,6 @@ export default function PosicionesPage() {
           </div>
         )}
 
-        {/* Top 3 podium */}
         {leaderboard.length >= 1 && (
           <div className="grid grid-cols-1 xs:grid-cols-3 gap-4 mb-6">
             {leaderboard.slice(0, 3).map((entry, idx) => {
@@ -323,26 +308,24 @@ export default function PosicionesPage() {
                         {entry.displayName}
                       </p>
                       <p className="text-2xl font-bold text-white mt-2">{entry.puntosTotales}</p>
-                      <p className="text-xs text-slate-400">puntos</p>
+                      <p className="text-xs text-slate-400">{t.pts}</p>
                     </div>
 
-                    {/* Mini stats - Desktop: show labels, Mobile: compact badges */}
                     <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-3 pt-3 border-t border-slate-700">
                       <div className="text-center">
                         <p className="text-lg sm:text-xl font-bold text-green-400">{entry.exactos}</p>
-                        <p className="text-[10px] sm:text-xs text-slate-400">Exactos</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">{t.exactos}</p>
                       </div>
                       <div className="text-center">
                         <p className="text-lg sm:text-xl font-bold text-blue-400">{entry.winners}</p>
-                        <p className="text-[10px] sm:text-xs text-slate-400">Winners</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">{t.winners}</p>
                       </div>
                       <div className="text-center">
                         <p className="text-lg sm:text-xl font-bold text-red-400">{entry.perdidos}</p>
-                        <p className="text-[10px] sm:text-xs text-slate-400">Errados</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">{t.errados}</p>
                       </div>
                     </div>
 
-                    {/* Extra stats: efectividad, distancia, partidos, premios */}
                     <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 mt-3 pt-3 border-t border-slate-700">
                       <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded flex items-center gap-1">
                         <Zap className="w-3 h-3" />
@@ -375,17 +358,16 @@ export default function PosicionesPage() {
                       onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
                       className="w-full mt-3 py-3 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-h-[48px]"
                     >
-                      {isExpanded ? 'Ocultar detalles' : 'Ver detalles'}
+                      {isExpanded ? t.ocultarDetalles : t.verDetalles}
                     </button>
                   </div>
 
-                  {/* Detalles expandidos */}
                   {isExpanded && detalles[entry.usuarioId] && (
                     <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-4 space-y-3">
                       {detalles[entry.usuarioId].exactosList.length > 0 && (
                         <div>
                           <p className="text-xs text-green-400 font-medium mb-1 flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" /> Exactos ({entry.exactos})
+                            <CheckCircle className="w-3 h-3" /> {t.exactos} ({entry.exactos})
                           </p>
                           <div className="space-y-1">
                             {detalles[entry.usuarioId].exactosList.map((partido, i) => (
@@ -397,7 +379,7 @@ export default function PosicionesPage() {
                       {detalles[entry.usuarioId].winnersList.length > 0 && (
                         <div>
                           <p className="text-xs text-blue-400 font-medium mb-1 flex items-center gap-1">
-                            <TrendingUp className="w-3 h-3" /> Winners ({entry.winners})
+                            <TrendingUp className="w-3 h-3" /> {t.winners} ({entry.winners})
                           </p>
                           <div className="space-y-1">
                             {detalles[entry.usuarioId].winnersList.map((partido, i) => (
@@ -409,7 +391,7 @@ export default function PosicionesPage() {
                       {detalles[entry.usuarioId].perdidosList.length > 0 && (
                         <div>
                           <p className="text-xs text-red-400 font-medium mb-1 flex items-center gap-1">
-                            <XCircle className="w-3 h-3" /> Errados ({entry.perdidos})
+                            <XCircle className="w-3 h-3" /> {t.errados} ({entry.perdidos})
                           </p>
                           <div className="space-y-1">
                             {detalles[entry.usuarioId].perdidosList.map((partido, i) => (
@@ -426,20 +408,19 @@ export default function PosicionesPage() {
           </div>
         )}
 
-        {/* Resto del leaderboard */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-slate-700 bg-slate-800">
             <h3 className="font-bold text-white flex items-center gap-2">
               <Users className="w-5 h-5 text-slate-400" />
-              Tabla Completa
+              {t.tablaCompleta}
             </h3>
           </div>
 
           {leaderboard.length === 0 ? (
             <div className="p-8 text-center text-slate-400">
               <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No hay participantes todavía</p>
-              <p className="text-sm">¡Invita a tus amigos para competir!</p>
+              <p>{t.noHayParticipantes}</p>
+              <p className="text-sm">{t.invitaACompetir}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-700">
@@ -454,7 +435,6 @@ export default function PosicionesPage() {
                         entry.usuarioId === user?.uid ? 'bg-amber-400/10' : ''
                       }`}
                     >
-                      {/* Fila principal */}
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                         <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300 shrink-0">
                           {posicion}
@@ -466,20 +446,17 @@ export default function PosicionesPage() {
                               {entry.displayName}
                             </p>
                             {entry.usuarioId === user?.uid && (
-                              <span className="text-xs text-amber-400">(Vos)</span>
+                              <span className="text-xs text-amber-400">(Tu)</span>
                             )}
                           </div>
 
-                          {/* Stats row */}
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                            {/* Partidos jugados */}
                             <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded flex items-center gap-1">
                               <Zap className="w-3 h-3" />
                               <span className="hidden sm:inline">{entry.totalJugados}/{totalPartidos}</span>
                               <span className="sm:hidden">{entry.totalJugados}/{totalPartidos}</span>
                             </span>
 
-                            {/* Exactos */}
                             <span className="flex items-center gap-0.5">
                               <span className="hidden sm:inline text-xs text-green-400 flex items-center gap-0.5">
                                 <Target className="w-3 h-3" />{entry.exactos}
@@ -487,7 +464,6 @@ export default function PosicionesPage() {
                               <span className="sm:hidden text-xs bg-green-400/20 text-green-400 px-1.5 py-0.5 rounded font-medium">{entry.exactos}E</span>
                             </span>
 
-                            {/* Winners */}
                             <span className="flex items-center gap-0.5">
                               <span className="hidden sm:inline text-xs text-blue-400 flex items-center gap-0.5">
                                 <TrendingUp className="w-3 h-3" />{entry.winners}
@@ -495,7 +471,6 @@ export default function PosicionesPage() {
                               <span className="sm:hidden text-xs bg-blue-400/20 text-blue-400 px-1.5 py-0.5 rounded font-medium">{entry.winners}W</span>
                             </span>
 
-                            {/* Errados */}
                             <span className="flex items-center gap-0.5">
                               <span className="hidden sm:inline text-xs text-red-400 flex items-center gap-0.5">
                                 <XCircle className="w-3 h-3" />{entry.perdidos}
@@ -503,7 +478,6 @@ export default function PosicionesPage() {
                               <span className="sm:hidden text-xs bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded font-medium">{entry.perdidos}X</span>
                             </span>
 
-                            {/* Efectividad */}
                             <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                               entry.efectividad >= 70 ? 'bg-green-400/20 text-green-400' :
                               entry.efectividad >= 40 ? 'bg-yellow-400/20 text-yellow-400' :
@@ -512,7 +486,6 @@ export default function PosicionesPage() {
                               {entry.efectividad}%
                             </span>
 
-                            {/* Premios */}
                             {partidosConPremio && (
                               <span className="text-xs bg-purple-400/20 text-purple-400 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                                 <Award className="w-3 h-3" />
@@ -523,10 +496,9 @@ export default function PosicionesPage() {
                           </div>
                         </div>
 
-                        {/* Distancia al líder */}
                         {entry.distanciaLider > 0 && (
                           <div className="text-right shrink-0">
-                            <p className="text-xs text-slate-400">del líder</p>
+                            <p className="text-xs text-slate-400">{t.delLider}</p>
                             <p className="text-sm font-medium text-red-400">
                               -{entry.distanciaLider}
                             </p>
@@ -539,13 +511,11 @@ export default function PosicionesPage() {
                           </div>
                         )}
 
-                        {/* Puntos */}
                         <div className="text-right shrink-0 min-w-[50px]">
                           <p className="text-lg sm:text-xl font-bold text-amber-400">{entry.puntosTotales}</p>
-                          <p className="text-xs text-slate-400">pts</p>
+                          <p className="text-xs text-slate-400">{t.pts}</p>
                         </div>
 
-                        {/* Expand button */}
                         <button
                           onClick={() => setUsuarioExpandido(isExpanded ? null : entry.usuarioId)}
                           className="px-3 py-2 text-sm bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
@@ -555,13 +525,12 @@ export default function PosicionesPage() {
                       </div>
                     </div>
 
-                    {/* Detalles expandidos */}
                     {isExpanded && detalles[entry.usuarioId] && (
                       <div className="mx-0 sm:mx-4 mb-3 bg-slate-900/50 border border-slate-700 rounded-xl p-4 space-y-3">
                         {detalles[entry.usuarioId].exactosList.length > 0 && (
                           <div>
                             <p className="text-xs text-green-400 font-medium mb-1 flex items-center gap-1">
-                              <CheckCircle className="w-3 h-3" /> Exactos ({entry.exactos})
+                              <CheckCircle className="w-3 h-3" /> {t.exactos} ({entry.exactos})
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {detalles[entry.usuarioId].exactosList.map((partido, i) => (
@@ -575,7 +544,7 @@ export default function PosicionesPage() {
                         {detalles[entry.usuarioId].winnersList.length > 0 && (
                           <div>
                             <p className="text-xs text-blue-400 font-medium mb-1 flex items-center gap-1">
-                              <TrendingUp className="w-3 h-3" /> Winners ({entry.winners})
+                              <TrendingUp className="w-3 h-3" /> {t.winners} ({entry.winners})
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {detalles[entry.usuarioId].winnersList.map((partido, i) => (
@@ -589,7 +558,7 @@ export default function PosicionesPage() {
                         {detalles[entry.usuarioId].perdidosList.length > 0 && (
                           <div>
                             <p className="text-xs text-red-400 font-medium mb-1 flex items-center gap-1">
-                              <XCircle className="w-3 h-3" /> Errados ({entry.perdidos})
+                              <XCircle className="w-3 h-3" /> {t.errados} ({entry.perdidos})
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {detalles[entry.usuarioId].perdidosList.map((partido, i) => (
@@ -601,7 +570,7 @@ export default function PosicionesPage() {
                           </div>
                         )}
                         {entry.totalJugados === 0 && (
-                          <p className="text-xs text-slate-500">Sin partidos jugados aún</p>
+                          <p className="text-xs text-slate-500">{t.sinPartidosJugados}</p>
                         )}
                       </div>
                     )}

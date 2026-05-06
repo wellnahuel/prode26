@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { usePartidos, useMisPronosticos } from '@/hooks/usePartidos';
 import { Timestamp } from 'firebase/firestore';
 import { collection, addDoc, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { ChevronLeft, ChevronRight, Save, Lock, Check, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Save, Lock, Check, X, Clock } from 'lucide-react';
 import { getBandera } from '@/lib/banderas';
 
 const GRUPOS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
@@ -15,8 +16,24 @@ interface PronosticoLocal {
   [partidoId: string]: { golesA: number; golesB: number };
 }
 
+function getTimeRemaining(fechaInicio: Timestamp): { horas: number; minutos: number; cerrado: boolean; started: boolean } | null {
+  const ahora = Timestamp.now().toMillis();
+  const inicio = fechaInicio.toMillis();
+  const diff = inicio - ahora;
+
+  if (diff <= 0) {
+    return { horas: 0, minutos: 0, cerrado: true, started: true };
+  }
+
+  const horas = Math.floor(diff / (1000 * 60 * 60));
+  const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return { horas, minutos, cerrado: false, started: false };
+}
+
 export default function PronosticosPage() {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const { partidos, loading: loadingPartidos } = usePartidos();
   const { pronosticos, loading: loadingPronosticos } = useMisPronosticos(user?.uid);
 
@@ -24,6 +41,13 @@ export default function PronosticosPage() {
   const [grupoActual, setGrupoActual] = useState('A');
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: 'success' | 'error'; texto: string } | null>(null);
+  const [, setTick] = useState(0);
+
+  // Force re-render every minute to update countdowns
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (pronosticos.length > 0) {
@@ -67,7 +91,6 @@ export default function PronosticosPage() {
         const pronostico = pronosticoLocal[partido.id];
         if (pronostico === undefined) continue;
 
-        // Buscar si ya existe
         const q = query(
           collection(db, 'pronosticos'),
           where('usuarioId', '==', user.uid),
@@ -98,7 +121,7 @@ export default function PronosticosPage() {
         }
       }
 
-      setMensaje({ tipo: 'success', texto: '¡Pronósticos guardados!' });
+      setMensaje({ tipo: 'success', texto: t.partidosListos });
       setTimeout(() => setMensaje(null), 3000);
     } catch (error) {
       console.error('Error guardando:', error);
@@ -118,7 +141,7 @@ export default function PronosticosPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-400 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-slate-400">Cargando partidos...</p>
+          <p className="text-slate-400">{t.cargando}</p>
         </div>
       </div>
     );
@@ -130,8 +153,8 @@ export default function PronosticosPage() {
       <header className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-bold text-white">Cargar Pronósticos</h1>
-            <div className="text-sm text-slate-400">Fase de Grupos</div>
+            <h1 className="text-xl font-bold text-white">{t.cargarPronosticosTitle}</h1>
+            <div className="text-sm text-slate-400">{t.faseGruposLarga}</div>
           </div>
 
           {/* Navegación de grupos */}
@@ -176,33 +199,33 @@ export default function PronosticosPage() {
         {/* Info de puntos */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-6">
           <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-            <span className="text-lg">📊</span> Sistema de Puntos - Fase de Grupos
+            <span className="text-lg">📊</span> {t.sistemaDePuntos}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-green-400">5</p>
-              <p className="text-xs text-slate-400">Puntos</p>
-              <p className="text-xs text-slate-500 mt-1">Resultado exacto</p>
+              <p className="text-xs text-slate-400">{t.puntos}</p>
+              <p className="text-xs text-slate-500 mt-1">{t.scoreCorrecto}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-blue-400">2</p>
-              <p className="text-xs text-slate-400">Puntos</p>
-              <p className="text-xs text-slate-500 mt-1">Ganador + Score</p>
+              <p className="text-xs text-slate-400">{t.puntos}</p>
+              <p className="text-xs text-slate-500 mt-1">{t.ganadorScore}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-green-400">72</p>
-              <p className="text-xs text-slate-400">Partidos</p>
-              <p className="text-xs text-slate-500 mt-1">6 por grupo × 12</p>
+              <p className="text-xs text-slate-400">{t.partidosLabel}</p>
+              <p className="text-xs text-slate-500 mt-1">6 x 12</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-amber-400">360</p>
-              <p className="text-xs text-slate-400">Puntos máx.</p>
-              <p className="text-xs text-slate-500 mt-1">Todos exactos</p>
+              <p className="text-xs text-slate-400">{t.puntosMax}</p>
+              <p className="text-xs text-slate-500 mt-1">{t.todosExactos}</p>
             </div>
           </div>
           <p className="text-xs text-slate-500 mt-3">
-            <span className="text-green-400">✅ Exacto</span> = Score correcto | 
-            <span className="text-blue-400 ml-2">🔵 Winner</span> = Ganador (no importa score)
+            <span className="text-green-400">✅ {t.exacto}</span> = {t.scoreCorrecto} |
+            <span className="text-blue-400 ml-2">🔵 {t.winner}</span> = {t.acertarGanadorNoScore}
           </p>
         </div>
 
@@ -225,6 +248,7 @@ export default function PronosticosPage() {
           {partidosDelGrupo.map((partido) => {
             const bloqueo = partidoHaComenzado(partido.fechaInicio);
             const pronostico = pronosticoLocal[partido.id];
+            const timeInfo = getTimeRemaining(partido.fechaInicio);
 
             return (
               <div
@@ -235,7 +259,7 @@ export default function PronosticosPage() {
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm text-slate-400">
-                    {partido.fechaInicio.toDate().toLocaleDateString('es-ES', {
+                    {partido.fechaInicio.toDate().toLocaleDateString(language === 'it' ? 'it-IT' : 'es-ES', {
                       weekday: 'short',
                       month: 'short',
                       day: 'numeric',
@@ -243,12 +267,27 @@ export default function PronosticosPage() {
                       minute: '2-digit',
                     })}
                   </div>
-                  {bloqueo && (
-                    <div className="flex items-center gap-1 text-red-400 text-sm">
-                      <Lock className="w-4 h-4" />
-                      Cerrado
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {!bloqueo && timeInfo && (
+                      <div className={`flex items-center gap-1 text-sm ${
+                        timeInfo.horas < 1 ? 'text-amber-400' : 'text-slate-400'
+                      }`}>
+                        <Clock className="w-4 h-4" />
+                        <span>
+                          {timeInfo.horas > 0
+                            ? `${t.seCierraEn} ${timeInfo.horas}h ${timeInfo.minutos}m`
+                            : `${t.seCierraEnMinutos.replace('{m}', timeInfo.minutos.toString())}`
+                          }
+                        </span>
+                      </div>
+                    )}
+                    {bloqueo && (
+                      <div className="flex items-center gap-1 text-red-400 text-sm">
+                        <Lock className="w-4 h-4" />
+                        {t.partidoCerrado}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -312,12 +351,12 @@ export default function PronosticosPage() {
               {guardando ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-2 border-slate-900 border-t-transparent"></div>
-                  Guardando...
+                  {t.guardando}
                 </>
               ) : (
                 <>
                   <Save className="w-5 h-5" />
-                  Guardar Pronósticos Grupo {grupoActual}
+                  {t.guardarPronosticosGrupo} {grupoActual}
                 </>
               )}
             </button>

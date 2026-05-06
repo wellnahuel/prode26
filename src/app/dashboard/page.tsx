@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import { Target, Trophy, Calendar, Users } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, usuarioData } = useAuth();
+  const { t } = useLanguage();
   const [participantes, setParticipantes] = useState('-');
   const [misPronosticos, setMisPronosticos] = useState(0);
   const [misPuntos, setMisPuntos] = useState(0);
@@ -101,10 +103,10 @@ export default function DashboardPage() {
           </div>
           <div>
             <h2 className="text-lg font-bold text-white mb-1">
-              ¡Bienvenido, {usuarioData?.displayName || user?.displayName}! 🏆
+              {t.bienvenido}, {usuarioData?.displayName || user?.displayName}! 🏆
             </h2>
             <p className="text-slate-300 text-sm">
-              Predicí los resultados del Mundial y competí con tus amigos.
+              {t.predicí}
             </p>
           </div>
         </div>
@@ -114,22 +116,22 @@ export default function DashboardPage() {
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Target className="w-6 h-6 text-amber-400 mx-auto mb-2" />
           <p className="text-2xl font-bold text-white">{misPronosticos}</p>
-          <p className="text-xs text-slate-400">Pronósticos</p>
+          <p className="text-xs text-slate-400">{t.labelPronosticos}</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Calendar className="w-6 h-6 text-amber-400 mx-auto mb-2" />
           <p className="text-2xl font-bold text-white">72</p>
-          <p className="text-xs text-slate-400">Partidos</p>
+          <p className="text-xs text-slate-400">{t.partidos}</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Trophy className="w-6 h-6 text-amber-400 mx-auto mb-2" />
           <p className="text-2xl font-bold text-white">{misPuntos}</p>
-          <p className="text-xs text-slate-400">Puntos</p>
+          <p className="text-xs text-slate-400">{t.puntos}</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Users className="w-6 h-6 text-amber-400 mx-auto mb-2" />
           <p className="text-2xl font-bold text-white">{participantes}</p>
-          <p className="text-xs text-slate-400">Participantes</p>
+          <p className="text-xs text-slate-400">{t.participantes}</p>
         </div>
       </div>
 
@@ -139,14 +141,14 @@ export default function DashboardPage() {
           className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-amber-400/20 flex items-center justify-center gap-3"
         >
           <Target className="w-6 h-6" />
-          Cargar Pronósticos
+          {t.cargarPronosticos}
         </Link>
         <Link
           href="/dashboard/posiciones"
           className="bg-slate-800 hover:bg-slate-700 text-white font-medium py-4 px-6 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-3"
         >
           <Trophy className="w-6 h-6 text-amber-400" />
-          Ver Tabla de Posiciones
+          {t.verTabla}
         </Link>
       </div>
 

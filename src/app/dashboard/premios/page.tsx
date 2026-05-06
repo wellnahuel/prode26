@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Save, Check, X, Trophy } from 'lucide-react';
@@ -103,6 +104,7 @@ const PAISES = Object.keys(JUGADORES_POR_PAIS).sort();
 
 export default function PremiosPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [paisGoleador, setPaisGoleador] = useState('');
   const [paisAsistidor, setPaisAsistidor] = useState('');
   const [paisMvp, setPaisMvp] = useState('');
@@ -167,7 +169,7 @@ export default function PremiosPage() {
     if (!user) return;
 
     if (!jugadorGoleador || !jugadorAsistidor || !jugadorMvp) {
-      setMensaje({ tipo: 'error', texto: 'Completá todos los campos' });
+      setMensaje({ tipo: 'error', texto: t.completáTodosLosCampos });
       return;
     }
 
@@ -203,7 +205,7 @@ export default function PremiosPage() {
         }
       }
 
-      setMensaje({ tipo: 'success', texto: '¡Premios guardados!' });
+      setMensaje({ tipo: 'success', texto: t.partidosListos });
       setCargado(true);
     } catch (error) {
       console.error('Error:', error);
@@ -220,39 +222,38 @@ export default function PremiosPage() {
           <div className="flex items-center gap-3">
             <Trophy className="w-8 h-8 text-amber-400" />
             <div>
-              <h1 className="text-xl font-bold text-white">Premios Especiales</h1>
-              <p className="text-xs text-slate-400">5 puntos por cada acierto</p>
+              <h1 className="text-xl font-bold text-white">{t.premiosEspeciales}</h1>
+              <p className="text-xs text-slate-400">{t.cincoPuntosPorCadaAcierto}</p>
             </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6">
-        {/* Info de puntos */}
         <div className="bg-amber-400/10 border border-amber-400/20 rounded-2xl p-4 mb-6">
-          <h3 className="text-amber-400 font-medium mb-2">🏆 Premios Individuales</h3>
+          <h3 className="text-amber-400 font-medium mb-2">{t.premiosIndividuales}</h3>
           <p className="text-slate-300 text-sm mb-4">
-            Pronosticá los mejores jugadores del torneo. Acertá y sumá <span className="text-amber-400 font-bold">5 puntos</span> por cada uno.
+            {t.pronosticaLosMejores} <span className="text-amber-400 font-bold">{t.ptsPorCada}</span> {t.maximoPuntosSiAcertasLos3}.
           </p>
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl">⚽</p>
-              <p className="text-sm text-white font-medium">Goleador</p>
-              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+              <p className="text-sm text-white font-medium">{t.goleadorDelTorneo}</p>
+              <p className="text-xs text-green-400 mt-1">{t.ptsPorCada}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl">🅰️</p>
-              <p className="text-sm text-white font-medium">Asistidor</p>
-              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+              <p className="text-sm text-white font-medium">{t.asistidorDelTorneo}</p>
+              <p className="text-xs text-green-400 mt-1">{t.ptsPorCada}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-3 text-center">
               <p className="text-2xl">⭐</p>
-              <p className="text-sm text-white font-medium">MVP</p>
-              <p className="text-xs text-green-400 mt-1">+5 pts</p>
+              <p className="text-sm text-white font-medium">{t.mvpDelTorneo}</p>
+              <p className="text-xs text-green-400 mt-1">{t.ptsPorCada}</p>
             </div>
           </div>
           <p className="text-xs text-slate-500 mt-3">
-            Máximo: <span className="text-green-400 font-medium">15 puntos</span> si acertás los 3 premios
+            {t.maximo}: <span className="text-green-400 font-medium">{t.maximoPuntosSiAcertasLos3}</span>
           </p>
         </div>
 
@@ -268,10 +269,10 @@ export default function PremiosPage() {
         )}
 
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
-          <h2 className="text-lg font-bold text-white mb-4">⚽ Goleador del Torneo</h2>
+          <h2 className="text-lg font-bold text-white mb-4">⚽ {t.goleadorDelTorneo}</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">País</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.pais}</label>
               <select
                 value={paisGoleador}
                 onChange={(e) => {
@@ -280,21 +281,21 @@ export default function PremiosPage() {
                 }}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
-                <option value="">Seleccioná un país</option>
+                <option value="">{t.seleccionáUnPaís}</option>
                 {PAISES.map((pais) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.jugador}</label>
               <select
                 value={jugadorGoleador}
                 onChange={(e) => setJugadorGoleador(e.target.value)}
                 disabled={!paisGoleador}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccioná un jugador</option>
+                <option value="">{t.seleccionáUnJugador}</option>
                 {paisGoleador && JUGADORES_POR_PAIS[paisGoleador]?.map((j) => (
                   <option key={j} value={j}>{j}</option>
                 ))}
@@ -304,10 +305,10 @@ export default function PremiosPage() {
         </div>
 
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-4">
-          <h2 className="text-lg font-bold text-white mb-4">🅰️ Asistidor del Torneo</h2>
+          <h2 className="text-lg font-bold text-white mb-4">🅰️ {t.asistidorDelTorneo}</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">País</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.pais}</label>
               <select
                 value={paisAsistidor}
                 onChange={(e) => {
@@ -316,21 +317,21 @@ export default function PremiosPage() {
                 }}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
-                <option value="">Seleccioná un país</option>
+                <option value="">{t.seleccionáUnPaís}</option>
                 {PAISES.map((pais) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.jugador}</label>
               <select
                 value={jugadorAsistidor}
                 onChange={(e) => setJugadorAsistidor(e.target.value)}
                 disabled={!paisAsistidor}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccioná un jugador</option>
+                <option value="">{t.seleccionáUnJugador}</option>
                 {paisAsistidor && JUGADORES_POR_PAIS[paisAsistidor]?.map((j) => (
                   <option key={j} value={j}>{j}</option>
                 ))}
@@ -340,10 +341,10 @@ export default function PremiosPage() {
         </div>
 
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 sm:p-6 mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">⭐ MVP del Torneo (Balón de Oro)</h2>
+          <h2 className="text-lg font-bold text-white mb-4">⭐ {t.mvpDelTorneo}</h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">País</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.pais}</label>
               <select
                 value={paisMvp}
                 onChange={(e) => {
@@ -352,21 +353,21 @@ export default function PremiosPage() {
                 }}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
-                <option value="">Seleccioná un país</option>
+                <option value="">{t.seleccionáUnPaís}</option>
                 {PAISES.map((pais) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Jugador</label>
+              <label className="block text-sm text-slate-400 mb-2">{t.jugador}</label>
               <select
                 value={jugadorMvp}
                 onChange={(e) => setJugadorMvp(e.target.value)}
                 disabled={!paisMvp}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccioná un jugador</option>
+                <option value="">{t.seleccionáUnJugador}</option>
                 {paisMvp && JUGADORES_POR_PAIS[paisMvp]?.map((j) => (
                   <option key={j} value={j}>{j}</option>
                 ))}
@@ -383,19 +384,19 @@ export default function PremiosPage() {
           {guardando ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-2 border-slate-900 border-t-transparent"></div>
-              Guardando...
+              {t.guardando_2}
             </>
           ) : (
             <>
               <Save className="w-5 h-5" />
-              Guardar Pronósticos de Premios
+              {t.guardarPronosticosDePremios}
             </>
           )}
         </button>
 
         {cargado && (
           <p className="text-center text-slate-400 text-sm mt-4">
-            ✓ Ya tenés tus premios cargados
+            ✓ {t.yaTenesTusPremiosCargados}
           </p>
         )}
       </main>

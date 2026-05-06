@@ -2,12 +2,14 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Trophy, Target, BarChart3, LogOut, Home, Swords, BookOpen } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-400 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-slate-400">Cargando...</p>
+          <p className="text-slate-400">{t.cargando}</p>
         </div>
       </div>
     );
@@ -31,12 +33,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) return null;
 
   const navItems = [
-    { href: '/dashboard', label: 'Inicio', icon: Home },
-    { href: '/dashboard/pronosticos', label: 'Pronósticos', icon: Target },
-    { href: '/dashboard/eliminatoria', label: 'Eliminatoria', icon: Swords },
-    { href: '/dashboard/posiciones', label: 'Posiciones', icon: BarChart3 },
-    { href: '/dashboard/premios', label: 'Premios', icon: Trophy },
-    { href: '/dashboard/reglamento', label: 'Reglamento', icon: BookOpen },
+    { href: '/dashboard', label: t.inicio, icon: Home },
+    { href: '/dashboard/pronosticos', label: t.pronosticos, icon: Target },
+    { href: '/dashboard/eliminatoria', label: t.eliminatoria, icon: Swords },
+    { href: '/dashboard/posiciones', label: t.posiciones, icon: BarChart3 },
+    { href: '/dashboard/premios', label: t.premios, icon: Trophy },
+    { href: '/dashboard/reglamento', label: t.reglamento, icon: BookOpen },
   ];
 
   return (
@@ -50,7 +52,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <h1 className="text-lg font-bold text-white">PRODE 2026</h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Language Switch */}
+              <button
+                onClick={() => setLanguage(language === 'es' ? 'it' : 'es')}
+                className="flex items-center gap-1 px-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all"
+                title={language === 'es' ? 'Switch to Italian' : 'Cambiar a Español'}
+              >
+                <span className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  language === 'es' ? 'bg-amber-400 text-slate-900' : 'text-slate-400'
+                }`}>
+                  🇪🇸🇦🇷 ES
+                </span>
+                <span className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  language === 'it' ? 'bg-amber-400 text-slate-900' : 'text-slate-400'
+                }`}>
+                  🇮🇹 IT
+                </span>
+              </button>
+
               <span className="text-sm text-slate-400 hidden sm:block">{user.displayName}</span>
               <Link
                 href="/auth"

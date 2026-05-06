@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Trophy, UserPlus, LogIn } from 'lucide-react';
 
@@ -15,6 +16,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   const { login, register } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +56,26 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="mb-8 text-center">
+        {/* Language Switch */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setLanguage(language === 'es' ? 'it' : 'es')}
+            className="flex items-center gap-1 px-1 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all"
+            title={language === 'es' ? 'Switch to Italian' : 'Cambiar a Español'}
+          >
+            <span className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              language === 'es' ? 'bg-amber-400 text-slate-900' : 'text-slate-400'
+            }`}>
+              🇪🇸🇦🇷 ES
+            </span>
+            <span className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              language === 'it' ? 'bg-amber-400 text-slate-900' : 'text-slate-400'
+            }`}>
+              🇮🇹 IT
+            </span>
+          </button>
+        </div>
+
         <div className="inline-flex items-center gap-3 mb-2">
           <Trophy className="w-12 h-12 text-amber-400" />
           <h1 className="text-4xl font-bold text-white">PRODE 2026</h1>
@@ -62,6 +84,17 @@ export default function AuthPage() {
       </div>
 
       <div className="w-full max-w-md bg-slate-800/50 border border-slate-700 rounded-2xl p-8 shadow-2xl">
+        {/* Info sobre email */}
+        <div className="bg-blue-400/10 border border-blue-400/30 rounded-xl p-4 mb-6">
+          <p className="text-blue-400 font-medium mb-2 text-sm flex items-center gap-2">
+            <span className="text-lg">💡</span>
+            {t.emailNoReal}
+          </p>
+          <p className="text-slate-300 text-xs leading-relaxed">
+            {t.emailNoRealDesc}
+          </p>
+        </div>
+
         <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-xl">
           <button
             type="button"
@@ -73,7 +106,7 @@ export default function AuthPage() {
             }`}
           >
             <LogIn className="w-4 h-4" />
-            Iniciar Sesión
+            {t.iniciarSesion}
           </button>
           <button
             type="button"
@@ -85,7 +118,7 @@ export default function AuthPage() {
             }`}
           >
             <UserPlus className="w-4 h-4" />
-            Registrarse
+            {t.registrarse}
           </button>
         </div>
 
@@ -93,7 +126,7 @@ export default function AuthPage() {
           {!isLogin && (
             <div>
               <label htmlFor="displayName" className="block text-sm font-medium text-slate-300 mb-2">
-                Nombre
+                {t.nombre}
               </label>
               <input
                 id="displayName"
@@ -109,7 +142,7 @@ export default function AuthPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-              Email
+              {t.email}
             </label>
             <input
               id="email"
@@ -124,7 +157,7 @@ export default function AuthPage() {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-              Contraseña
+              {t.contrasena}
             </label>
             <div className="relative">
               <input
@@ -158,24 +191,24 @@ export default function AuthPage() {
             disabled={loading}
             className="w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 disabled:bg-amber-400/50 disabled:cursor-not-allowed text-slate-900 font-bold rounded-xl transition-all shadow-lg shadow-amber-400/20"
           >
-            {loading ? 'Cargando...' : isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+            {loading ? t.cargando : isLogin ? t.iniciarSesion : t.registrarse}
           </button>
         </form>
 
         <p className="mt-6 text-center text-slate-500 text-sm">
-          {isLogin ? '¿No tenés cuenta? ' : '¿Ya tenés cuenta? '}
+          {isLogin ? t.noTenesCuenta : t.yaTenesCuenta}
           <button
             type="button"
             onClick={() => { setIsLogin(!isLogin); setError(''); }}
             className="text-amber-400 hover:text-amber-300 font-medium"
           >
-            {isLogin ? 'Registrate' : 'Iniciá sesión'}
+            {isLogin ? t.registrarse : t.iniciarSesion}
           </button>
         </p>
       </div>
 
       <p className="mt-8 text-center text-slate-500 text-sm max-w-md">
-        Solo para amigos - Datos guardados de forma privada en Firebase
+        {t.privado}
       </p>
     </div>
   );
