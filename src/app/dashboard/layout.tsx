@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-900 flex flex-col">
       {/* Header */}
       <header className="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Mobile menu overlay - below 640px */}
       {menuOpen && (
-        <div className="sm:hidden fixed inset-0 top-14 bg-slate-900/98 backdrop-blur-sm z-40 flex flex-col">
+        <div className="sm:hidden fixed inset-0 top-14 bg-slate-900 backdrop-blur-md z-40 flex flex-col">
           {/* Menu header with close button */}
           <div className="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700">
             <span className="text-white font-bold">Menú</span>
