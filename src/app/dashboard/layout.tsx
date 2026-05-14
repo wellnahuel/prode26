@@ -112,24 +112,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </nav>
 
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pt-16 sm:pt-0">{children}</main>
 
-      {/* Bottom tab bar for mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 sm:hidden z-50 pb-safe">
-        <div className="flex justify-around items-center py-2 px-2">
-          {navItems.slice(0, 5).map((item) => {
+      {/* Bottom tab bar for mobile - 6 items */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 sm:hidden z-50">
+        <div className="flex justify-around items-center py-2 px-1">
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg min-w-[60px] transition-all ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[50px] transition-all ${
                   isActive ? 'text-amber-400' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[9px] font-medium leading-tight">{item.label}</span>
               </Link>
             );
           })}
