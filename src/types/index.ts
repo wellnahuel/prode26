@@ -63,7 +63,7 @@ export const PUNTOS_POR_RONDA: Record<RondaPartido, { exacto: number; ganador: n
   final: { exacto: 25, ganador: 10 },
 };
 
-export const PUNTOS_PREMIOS = 5;
+export const PUNTOS_PREMIOS = 15;
 
 export function getPuntosExacto(ronda: RondaPartido): number {
   return PUNTOS_POR_RONDA[ronda]?.exacto ?? 7;

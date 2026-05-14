@@ -5,7 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Usuario, Partido, Pronostico, calcularPuntos } from '@/types';
+import { Usuario, Partido, Pronostico, calcularPuntos, PUNTOS_PREMIOS } from '@/types';
 import { Trophy, Users, Target, TrendingUp, CheckCircle, XCircle, Zap, Award } from 'lucide-react';
 
 interface LeaderboardEntry {
@@ -160,7 +160,7 @@ export default function PosicionesPage() {
             for (const premio of misPremios) {
               const valorReal = PREMIOS_REALES[premio.tipo as keyof typeof PREMIOS_REALES];
               if (valorReal && premio.valorPredicho === valorReal) {
-                puntosPremios += 5;
+                puntosPremios += PUNTOS_PREMIOS;
                 premiosAcertados++;
               }
             }
@@ -252,9 +252,25 @@ export default function PosicionesPage() {
         {miPosicion && (
           <div className="bg-gradient-to-r from-amber-400/20 to-amber-500/10 border border-amber-400/30 rounded-2xl p-4 mb-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <p className="text-sm text-slate-300">{t.tuPosicion}</p>
-                <p className="text-3xl font-bold text-amber-400">{miPosicion}° {t.lugar}</p>
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                  miPosicion === 1
+                    ? 'bg-amber-400 text-slate-900'
+                    : 'bg-slate-700 text-amber-400'
+                }`}>
+                  {miPosicion <= 3 ? ['🥇', '🥈', '🥉'][miPosicion - 1] : miPosicion}
+                </div>
+                <div>
+                  <p className="text-sm text-slate-300">{t.tuPosicion}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {miPosicion}° {t.lugar}
+                    {miPosicion > 1 && leaderboard[0]?.distanciaLider > 0 && (
+                      <span className="text-sm text-slate-400 font-normal ml-2">
+                        — {t.estasATantosDelLider.replace('{n}', leaderboard[0].distanciaLider.toString())}
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
               <div className="flex gap-6">
                 <div className="text-right">

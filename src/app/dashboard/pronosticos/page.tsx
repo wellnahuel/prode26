@@ -12,23 +12,36 @@ import { getBandera } from '@/lib/banderas';
 
 const GRUPOS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
+// Duración aproximada de un partido de mundial (2h 45min en ms)
+const MATCH_DURATION_MS = (2 * 60 * 60 + 45 * 60) * 1000;
+
 interface PronosticoLocal {
   [partidoId: string]: { golesA: number; golesB: number };
 }
 
-function getTimeRemaining(fechaInicio: Timestamp): { horas: number; minutos: number; cerrado: boolean; started: boolean } | null {
-  const ahora = Timestamp.now().toMillis();
+type TimeStatus = 'countdown' | 'live' | 'cerrado';
+
+function getPartidoStatus(fechaInicio: Timestamp): TimeStatus {
+  const ahora = Date.now();
+  const inicio = fechaInicio.toMillis();
+  const finEstimado = inicio + MATCH_DURATION_MS;
+
+  if (ahora < inicio) return 'countdown';
+  if (ahora < finEstimado) return 'live';
+  return 'cerrado';
+}
+
+function getTimeRemaining(fechaInicio: Timestamp): { horas: number; minutos: number } | null {
+  const ahora = Date.now();
   const inicio = fechaInicio.toMillis();
   const diff = inicio - ahora;
 
-  if (diff <= 0) {
-    return { horas: 0, minutos: 0, cerrado: true, started: true };
-  }
+  if (diff <= 0) return null;
 
   const horas = Math.floor(diff / (1000 * 60 * 60));
   const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  return { horas, minutos, cerrado: false, started: false };
+  return { horas, minutos };
 }
 
 export default function PronosticosPage() {
@@ -70,10 +83,6 @@ export default function PronosticosPage() {
         [equipo === 'A' ? 'golesA' : 'golesB']: valor,
       },
     }));
-  };
-
-  const partidoHaComenzado = (fechaInicio: Timestamp) => {
-    return Timestamp.now().toMillis() > fechaInicio.toMillis();
   };
 
   const guardarPronosticosDelGrupo = async () => {
@@ -229,6 +238,85 @@ export default function PronosticosPage() {
           </p>
         </div>
 
+        {/* Efectividad por grupo */}
+        {(() => {
+          const grupoStats: Record<string, { total: number; correctos: number; exactos: number }> = {};
+
+          partidos
+            .filter(p => p.fase === 'grupos' && p.grupo === grupoActual && p.resultado)
+            .forEach(partido => {
+              const pronostico = pronosticos.find(pr => pr.partidoId === partido.id);
+              if (!pronostico) return;
+
+              if (!grupoStats[grupoActual]) {
+                grupoStats[grupoActual] = { total: 0, correctos: 0, exactos: 0 };
+              }
+
+              grupoStats[grupoActual].total++;
+
+              const { golesA: realA, golesB: realB } = partido.resultado!;
+              const predA = pronostico.golesPredichoA;
+              const predB = pronostico.golesPredichoB;
+
+              if (realA === predA && realB === predB) {
+                grupoStats[grupoActual].exactos++;
+                grupoStats[grupoActual].correctos++;
+              } else {
+                const predWinnerA = predA > predB;
+                const predWinnerB = predB > predA;
+                const predEmpate = predA === predB;
+                const realWinnerA = realA > realB;
+                const realWinnerB = realB > realA;
+                const realEmpate = realA === realB;
+
+                if (
+                  (predWinnerA && realWinnerA) ||
+                  (predWinnerB && realWinnerB) ||
+                  (predEmpate && realEmpate)
+                ) {
+                  grupoStats[grupoActual].correctos++;
+                }
+              }
+            });
+
+          const stats = grupoStats[grupoActual];
+          if (!stats || stats.total === 0) return null;
+
+          const efectividad = Math.round((stats.correctos / stats.total) * 100);
+          return (
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-6">
+              <h4 className="text-white font-medium mb-3">📈 Efectividad del grupo {grupoActual}</h4>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="w-full bg-slate-700 rounded-full h-3">
+                    <div
+                      className={`h-3 rounded-full transition-all ${
+                        efectividad >= 70 ? 'bg-green-400' : efectividad >= 40 ? 'bg-amber-400' : 'bg-red-400'
+                      }`}
+                      style={{ width: `${efectividad}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className={`text-lg font-bold ${
+                    efectividad >= 70 ? 'text-green-400' : efectividad >= 40 ? 'text-amber-400' : 'text-red-400'
+                  }`}>
+                    {efectividad}%
+                  </span>
+                  <span className="text-xs text-slate-400 ml-2">
+                    ({stats.correctos}/{stats.total})
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-slate-400">
+                <span>✅ Exactos: {stats.exactos}</span>
+                <span>🔵 Winners: {stats.correctos - stats.exactos}</span>
+                <span>❌ Errados: {stats.total - stats.correctos}</span>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Mensaje */}
         {mensaje && (
           <div
@@ -246,15 +334,21 @@ export default function PronosticosPage() {
         {/* Partidos */}
         <div className="space-y-4">
           {partidosDelGrupo.map((partido) => {
-            const bloqueo = partidoHaComenzado(partido.fechaInicio);
+            const status = getPartidoStatus(partido.fechaInicio);
+            const esCerrado = status === 'cerrado';
+            const esLive = status === 'live';
             const pronostico = pronosticoLocal[partido.id];
             const timeInfo = getTimeRemaining(partido.fechaInicio);
 
             return (
               <div
                 key={partido.id}
-                className={`bg-slate-800/50 border rounded-2xl p-4 ${
-                  bloqueo ? 'border-red-500/30 opacity-75' : 'border-slate-700'
+                className={`bg-slate-800/50 border rounded-2xl p-4 transition-all ${
+                  esCerrado
+                    ? 'border-red-500/30 opacity-75'
+                    : esLive
+                    ? 'border-green-500/50 shadow-lg shadow-green-500/10'
+                    : 'border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -268,23 +362,34 @@ export default function PronosticosPage() {
                     })}
                   </div>
                   <div className="flex items-center gap-2">
-                    {!bloqueo && timeInfo && (
-                      <div className={`flex items-center gap-1 text-sm ${
-                        timeInfo.horas < 1 ? 'text-amber-400' : 'text-slate-400'
+                    {status === 'countdown' && timeInfo && (
+                      <div className={`flex items-center gap-1 text-sm px-3 py-1 rounded-full ${
+                        timeInfo.horas < 1 ? 'bg-amber-400/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'
                       }`}>
                         <Clock className="w-4 h-4" />
-                        <span>
+                        <span className="font-mono font-medium">
                           {timeInfo.horas > 0
-                            ? `${t.seCierraEn} ${timeInfo.horas}h ${timeInfo.minutos}m`
-                            : `${t.seCierraEnMinutos.replace('{m}', timeInfo.minutos.toString())}`
+                            ? `${timeInfo.horas}h ${timeInfo.minutos}m`
+                            : `${timeInfo.minutos}m`
                           }
                         </span>
                       </div>
                     )}
-                    {bloqueo && (
-                      <div className="flex items-center gap-1 text-red-400 text-sm">
+
+                    {esLive && (
+                      <div className="flex items-center gap-2 bg-green-400/20 text-green-400 px-3 py-1 rounded-full">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                        </span>
+                        <span className="text-sm font-bold uppercase tracking-wide">En juego</span>
+                      </div>
+                    )}
+
+                    {esCerrado && (
+                      <div className="flex items-center gap-1 text-red-400 text-sm px-3 py-1 rounded-full bg-red-400/10">
                         <Lock className="w-4 h-4" />
-                        {t.partidoCerrado}
+                        <span className="font-medium">{t.partidoCerrado}</span>
                       </div>
                     )}
                   </div>
@@ -304,7 +409,7 @@ export default function PronosticosPage() {
                       onChange={(e) =>
                         handleInputChange(partido.id, 'A', parseInt(e.target.value) || 0)
                       }
-                      disabled={bloqueo}
+                      disabled={esCerrado}
                       placeholder="-"
                       className="w-16 h-12 text-center text-2xl font-bold bg-slate-900 border border-slate-600 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
@@ -325,12 +430,44 @@ export default function PronosticosPage() {
                       onChange={(e) =>
                         handleInputChange(partido.id, 'B', parseInt(e.target.value) || 0)
                       }
-                      disabled={bloqueo}
+                      disabled={esCerrado}
                       placeholder="-"
                       className="w-16 h-12 text-center text-2xl font-bold bg-slate-900 border border-slate-600 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
                   </div>
                 </div>
+
+                {/* Predicción vs Resultado (solo si cerrado y tiene resultado) */}
+                {esCerrado && partido.resultado && pronostico && (
+                  <div className="mt-3 pt-3 border-t border-slate-700">
+                    <div className="flex items-center justify-center gap-4 text-xs">
+                      <div className="text-center">
+                        <p className="text-slate-500 mb-1">Tu predicción</p>
+                        <p className="font-bold text-white">
+                          {pronostico.golesA} - {pronostico.golesB}
+                        </p>
+                      </div>
+                      <div className="text-slate-500">→</div>
+                      <div className="text-center">
+                        <p className="text-slate-500 mb-1">Resultado</p>
+                        <p className="font-bold text-white">
+                          {partido.resultado.golesA} - {partido.resultado.golesB}
+                        </p>
+                      </div>
+                      <div className={`px-2 py-1 rounded text-xs font-bold ${
+                        pronostico.golesA === partido.resultado.golesA &&
+                        pronostico.golesB === partido.resultado.golesB
+                          ? 'bg-green-400/20 text-green-400'
+                          : 'bg-red-400/20 text-red-400'
+                      }`}>
+                        {pronostico.golesA === partido.resultado.golesA &&
+                        pronostico.golesB === partido.resultado.golesB
+                          ? 'EXACTO'
+                          : 'EQUIVOCADO'}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="text-center text-xs text-slate-500 mt-3">
                   📍 {partido.estadio}

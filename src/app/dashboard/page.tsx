@@ -115,8 +115,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Target className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{misPronosticos}</p>
-          <p className="text-xs text-slate-400">{t.labelPronosticos}</p>
+          <p className="text-2xl font-bold text-white">
+            {misPronosticos}/72
+          </p>
+          <p className="text-xs text-slate-400">{t.partidosPredichos}</p>
+          {misPronosticos < 72 && (
+            <p className="text-xs text-amber-400 mt-1">
+              {72 - misPronosticos} {t.porHacer}
+            </p>
+          )}
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
           <Calendar className="w-6 h-6 text-amber-400 mx-auto mb-2" />
@@ -135,6 +142,33 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Progress bar */}
+      {misPronosticos < 72 && (
+        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-slate-400">{t.progresoPronosticos}</p>
+            <p className="text-sm font-bold text-amber-400">
+              {Math.round((misPronosticos / 72) * 100)}%
+            </p>
+          </div>
+          <div className="w-full bg-slate-700 rounded-full h-3">
+            <div
+              className="bg-amber-400 h-3 rounded-full transition-all duration-500"
+              style={{ width: `${(misPronosticos / 72) * 100}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-2 text-center">
+            {misPronosticos} / 72 {t.partidosPredichos}
+          </p>
+        </div>
+      )}
+
+      {misPronosticos === 72 && (
+        <div className="bg-green-400/10 border border-green-400/30 rounded-xl p-4 mb-6 text-center">
+          <p className="text-green-400 font-bold">🎉 {t.todosLosPronosticosCargados}</p>
+        </div>
+      )}
+
       <div className="grid sm:grid-cols-2 gap-4 mb-6">
         <Link
           href="/dashboard/pronosticos"
@@ -150,6 +184,53 @@ export default function DashboardPage() {
           <Trophy className="w-6 h-6 text-amber-400" />
           {t.verTabla}
         </Link>
+      </div>
+
+      {/* Sobre la inscripción */}
+      <div className="bg-gradient-to-r from-green-400/10 to-green-500/5 border border-green-400/30 rounded-2xl p-6 mb-6">
+        <h3 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+          💰 {t.sobreElPozo}
+        </h3>
+        <p className="text-slate-300 text-sm mb-4">
+          {t.sobreElPozoDesc}
+        </p>
+
+        <div className="bg-slate-700/30 rounded-xl p-4 mb-4">
+          <h4 className="text-amber-400 font-medium mb-2">{t.comoFuncionaInscripcion}</h4>
+          <p className="text-slate-300 text-sm mb-3">
+            {t.inscripcion25Euros}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2 text-sm">
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="text-green-400">🏦</span>
+              {t.inscripcionTransferencia}
+            </div>
+            <span className="hidden sm:inline text-slate-500">|</span>
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="text-blue-400">💵</span>
+              {t.inscripcionContado}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-amber-400/10 border border-amber-400/30 rounded-xl p-3 text-center">
+            <p className="text-2xl mb-1">🥇</p>
+            <p className="text-amber-400 text-sm font-bold">{t.premio1Desc}</p>
+          </div>
+          <div className="bg-slate-600/50 border border-slate-500/50 rounded-xl p-3 text-center">
+            <p className="text-2xl mb-1">🥈</p>
+            <p className="text-slate-300 text-sm font-bold">{t.premio2Desc}</p>
+          </div>
+          <div className="bg-orange-400/10 border border-orange-400/30 rounded-xl p-3 text-center">
+            <p className="text-2xl mb-1">🥉</p>
+            <p className="text-orange-400 text-sm font-bold">{t.premio3Desc}</p>
+          </div>
+        </div>
+
+        <p className="text-slate-400 text-xs mt-4 text-center">
+          {t.cuandoSeCierraInscripcion}
+        </p>
       </div>
 
       <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">

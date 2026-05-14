@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      <nav className="bg-slate-800/50 border-b border-slate-700">
+      <nav className="bg-slate-800/50 border-b border-slate-700 hidden sm:block">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex gap-1 overflow-x-auto py-2 scrollbar-hide">
             {navItems.map((item) => {
@@ -114,7 +114,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <main className="flex-1">{children}</main>
 
-      <footer className="py-4 text-center text-xs text-slate-500 pb-safe">
+      {/* Bottom tab bar for mobile */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 sm:hidden z-50 pb-safe">
+        <div className="flex justify-around items-center py-2 px-2">
+          {navItems.slice(0, 5).map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg min-w-[60px] transition-all ${
+                  isActive ? 'text-amber-400' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      <footer className="py-4 text-center text-xs text-slate-500 pb-16 sm:pb-4">
         Powered by Firebase • Prode Mundial 2026
       </footer>
     </div>

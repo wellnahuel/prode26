@@ -83,6 +83,22 @@ export default function AuthPage() {
         <p className="text-slate-400">FIFA World Cup USA/México/Canadá 2026</p>
       </div>
 
+      {/* Bienvenida */}
+      <div className="w-full max-w-md bg-amber-400/10 border border-amber-400/30 rounded-2xl p-5 mb-6 text-center">
+        <p className="text-amber-300 font-medium text-sm leading-relaxed">
+          {t.bienvenidoProde}
+        </p>
+        <p className="text-slate-400 text-xs mt-2 leading-relaxed">
+          {t.bienvenidoProdeDesc}
+        </p>
+        <a
+          href="/dashboard/reglamento"
+          className="inline-block mt-3 text-amber-400 hover:text-amber-300 text-sm font-medium underline underline-offset-2"
+        >
+          → {t.reglamento}
+        </a>
+      </div>
+
       <div className="w-full max-w-md bg-slate-800/50 border border-slate-700 rounded-2xl p-8 shadow-2xl">
         {/* Info sobre email */}
         <div className="bg-blue-400/10 border border-blue-400/30 rounded-xl p-4 mb-6">

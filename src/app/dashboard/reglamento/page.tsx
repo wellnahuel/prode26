@@ -32,6 +32,53 @@ export default function ReglamentoPage() {
           </p>
         </div>
 
+        {/* Sobre la inscripción */}
+        <div className="bg-gradient-to-r from-green-400/10 to-green-500/5 border border-green-400/30 rounded-2xl p-6">
+          <h3 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+            💰 {t.sobreElPozo}
+          </h3>
+          <p className="text-slate-300 text-sm mb-4">
+            {t.sobreElPozoDesc}
+          </p>
+
+          <div className="bg-slate-700/30 rounded-xl p-4 mb-4">
+            <h4 className="text-amber-400 font-medium mb-2">{t.comoFuncionaInscripcion}</h4>
+            <p className="text-slate-300 text-sm mb-3">
+              {t.inscripcion25Euros}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 text-sm">
+              <div className="flex items-center gap-2 text-slate-300">
+                <span className="text-green-400">🏦</span>
+                {t.inscripcionTransferencia}
+              </div>
+              <span className="hidden sm:inline text-slate-500">|</span>
+              <div className="flex items-center gap-2 text-slate-300">
+                <span className="text-blue-400">💵</span>
+                {t.inscripcionContado}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-amber-400/10 border border-amber-400/30 rounded-xl p-3 text-center">
+              <p className="text-2xl mb-1">🥇</p>
+              <p className="text-amber-400 text-sm font-bold">{t.premio1Desc}</p>
+            </div>
+            <div className="bg-slate-600/50 border border-slate-500/50 rounded-xl p-3 text-center">
+              <p className="text-2xl mb-1">🥈</p>
+              <p className="text-slate-300 text-sm font-bold">{t.premio2Desc}</p>
+            </div>
+            <div className="bg-orange-400/10 border border-orange-400/30 rounded-xl p-3 text-center">
+              <p className="text-2xl mb-1">🥉</p>
+              <p className="text-orange-400 text-sm font-bold">{t.premio3Desc}</p>
+            </div>
+          </div>
+
+          <p className="text-slate-400 text-xs mt-4 text-center">
+            {t.cuandoSeCierraInscripcion}
+          </p>
+        </div>
+
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-amber-400" />
@@ -175,13 +222,13 @@ export default function ReglamentoPage() {
               <p className="text-xs text-slate-400">{t.faseEliminatoria}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-4">
-              <p className="text-3xl font-bold text-green-400">15</p>
+              <p className="text-3xl font-bold text-green-400">45</p>
               <p className="text-xs text-slate-400">{t.premios}</p>
             </div>
           </div>
           <div className="mt-4 bg-amber-400/20 rounded-xl p-4 text-center">
             <p className="text-slate-300 text-sm mb-1">{t.puntajeTotalMaximo}</p>
-            <p className="text-4xl font-bold text-amber-400">487 {t.pts}</p>
+            <p className="text-4xl font-bold text-amber-400">517 {t.pts}</p>
           </div>
         </div>
 
@@ -285,15 +332,15 @@ export default function ReglamentoPage() {
                 </tr>
                 <tr className="border-b border-slate-700/50">
                   <td className="py-2">{t.premios}</td>
-                  <td className="text-center text-green-400">5 pts</td>
+                  <td className="text-center text-green-400">15 pts</td>
                   <td className="text-center">—</td>
                   <td className="text-center">3</td>
-                  <td className="text-right text-amber-400">15 pts</td>
+                  <td className="text-right text-amber-400">45 pts</td>
                 </tr>
                 <tr className="bg-amber-400/10">
                   <td className="py-2 font-bold text-white">TOTAL</td>
                   <td colSpan={3}></td>
-                  <td className="text-right font-bold text-amber-400">487 {t.pts}</td>
+                  <td className="text-right font-bold text-amber-400">517 {t.pts}</td>
                 </tr>
               </tbody>
             </table>

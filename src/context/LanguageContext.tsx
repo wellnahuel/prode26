@@ -12,10 +12,13 @@ interface Translations {
   posiciones: string;
   premios: string;
   reglamento: string;
+  admin: string;
 
   // Auth
   emailNoReal: string;
   emailNoRealDesc: string;
+  bienvenidoProde: string;
+  bienvenidoProdeDesc: string;
   nombre: string;
   email: string;
   contrasena: string;
@@ -25,7 +28,7 @@ interface Translations {
   yaTenesCuenta: string;
   cargando: string;
 
-  // Dashboard
+// Dashboard
   bienvenido: string;
   predicí: string;
   labelPronosticos: string;
@@ -34,6 +37,20 @@ interface Translations {
   participantes: string;
   cargarPronosticos: string;
   verTabla: string;
+  sobreElPozo: string;
+  sobreElPozoDesc: string;
+  comoFuncionaInscripcion: string;
+  inscripcion25Euros: string;
+  inscripcionTransferencia: string;
+  inscripcionContado: string;
+  premio1Desc: string;
+  premio2Desc: string;
+  premio3Desc: string;
+  cuandoSeCierraInscripcion: string;
+  partidosPredichos: string;
+  porHacer: string;
+  progresoPronosticos: string;
+  todosLosPronosticosCargados: string;
 
   // General
   privado: string;
@@ -85,6 +102,7 @@ seCierraEn: string;
   pts: string;
   sinPartidosJugados: string;
   efectividad: string;
+  estasATantosDelLider: string;
 
   // Premios page
   premiosEspeciales: string;
@@ -165,10 +183,13 @@ const translations: Record<Language, Translations> = {
     posiciones: 'Posiciones',
     premios: 'Premios',
     reglamento: 'Reglamento',
+    admin: 'Admin',
     
     // Auth
     emailNoReal: 'No hace falta que uses tu email real',
     emailNoRealDesc: 'Usá cualquier email inventado como torino123@email.com. Lo único importante es tu nombre — es para que sepamos quién es cada uno.',
+    bienvenidoProde: '¡Hola! En este sitio jugamos un Prode (o Fantasy Calcio, para los italianos). La mayoría de los participantes somos del Mercato Centrale di Torino.',
+    bienvenidoProdeDesc: 'No hacen falta datos reales, solamente tu nombre para que sepamos quién es quién. Para más información sobre cómo funciona, visitá la sección de Reglamento.',
     nombre: 'Nombre',
     email: 'Email',
     contrasena: 'Contraseña',
@@ -187,6 +208,20 @@ const translations: Record<Language, Translations> = {
     participantes: 'Participantes',
     cargarPronosticos: 'Cargar Pronósticos',
     verTabla: 'Ver Tabla de Posiciones',
+    sobreElPozo: 'Sobre la Inscripción',
+    sobreElPozoDesc: 'Como todo juego de apuestas, se debe hacer un depósito. La idea es que cada participante ingrese con 25 euros, para que se sume al pozo total.',
+    comoFuncionaInscripcion: '¿Cómo funciona?',
+    inscripcion25Euros: 'Cada jugador paga 25€ para participar. El pozo total se reparte entre los 3 mejores al final del torneo.',
+    inscripcionTransferencia: 'Transferencia bancaria a un IBAN que se publicará proximamente',
+    inscripcionContado: 'En efectivo si nos conocemos personalmente',
+    premio1Desc: '1° Puesto',
+    premio2Desc: '2° Puesto',
+    premio3Desc: '3° Puesto',
+    cuandoSeCierraInscripcion: 'Cuando se cierre la inscripción se publicará el pozo total y el % para cada uno de los 3 del podio.',
+    partidosPredichos: 'partidos predichos',
+    porHacer: 'por hacer',
+    progresoPronosticos: 'Progreso de pronósticos',
+    todosLosPronosticosCargados: '¡Todos los pronósticos cargados!',
     
     // General
     privado: 'Datos guardados de forma privada en Firebase',
@@ -241,13 +276,14 @@ seCierraEn: 'Se cierra en',
     pts: 'pts',
     sinPartidosJugados: 'Sin partidos jugados aún',
     efectividad: 'Efectividad',
+    estasATantosDelLider: 'Estás a {n} pts del líder',
 
     // Premios page
     premiosEspeciales: 'Premios Especiales',
-    cincoPuntosPorCadaAcierto: '5 puntos por cada acierto',
+    cincoPuntosPorCadaAcierto: '15 puntos por cada acierto',
     premiosIndividuales: 'Premios Individuales',
     pronosticaLosMejores: 'Pronosticá los mejores jugadores del torneo. Acertá y sumá',
-    ptsPorCada: '+5 pts',
+    ptsPorCada: '+15 pts',
     maximoPuntosSiAcertasLos3: '15 puntos si acertás los 3',
     maximo: 'Máximo:',
     goleadorDelTorneo: 'Goleador del Torneo',
@@ -316,10 +352,13 @@ seCierraEn: 'Se cierra en',
     posiciones: 'Classifica',
     premios: 'Premi',
     reglamento: 'Regolamento',
+    admin: 'Admin',
 
     // Auth
     emailNoReal: 'Non c\'è bisogno che usi la tua email vera',
     emailNoRealDesc: 'Usa qualsiasi email inventato come torino123@email.com. L\'unica cosa importante è il tuo nome — è per sapere chi è ciascuno.',
+    bienvenidoProde: '¡Ciao! In questo sito giochiamo a un Fantasy Calcio (o Prode, per gli argentini). La maggior parte dei partecipanti siamo del Mercato Centrale di Torino.',
+    bienvenidoProdeDesc: 'Non servono dati reali, solo il tuo nome per sapere chi sei. Per maggiori informazioni su come funziona, visita la sezione Regolamento.',
     nombre: 'Nome',
     email: 'Email',
     contrasena: 'Password',
@@ -338,6 +377,20 @@ seCierraEn: 'Se cierra en',
     participantes: 'Partecipanti',
     cargarPronosticos: 'Carica Pronostici',
     verTabla: 'Vedi Classifica',
+    sobreElPozo: 'Sull\'Iscrizione',
+    sobreElPozoDesc: 'Come tutti i giochi di scommesse, devi fare un deposito. L\'idea è che ogni partecipante versi 25 euro per sommarsi al montepremi totale.',
+    comoFuncionaInscripcion: 'Come funziona?',
+    inscripcion25Euros: 'Ogni giocatore paga 25€ per partecipare. Il montepremi totale viene diviso tra i primi 3 alla fine del torneo.',
+    inscripcionTransferencia: 'Bonifico bancario a un IBAN che verrà pubblicato a breve',
+    inscripcionContado: 'In contanti se ci conosciamo di persona',
+    premio1Desc: '1° Posto',
+    premio2Desc: '2° Posto',
+    premio3Desc: '3° Posto',
+    cuandoSeCierraInscripcion: 'Quando le iscrizioni saranno chiuse, verrà pubblicato il montepremi totale e la % per ciascuno dei 3 del podio.',
+    partidosPredichos: 'pronostici fatti',
+    porHacer: 'da fare',
+    progresoPronosticos: 'Progresso pronostici',
+    todosLosPronosticosCargados: '¡Tutti i pronostici caricati!',
 
     // General
     privado: 'Dati salvati in modo privato su Firebase',
@@ -392,13 +445,14 @@ seCierraEn: 'Chiude tra',
     pts: 'pts',
     sinPartidosJugados: 'Nessuna partita giocata ancora',
     efectividad: 'Efficacia',
+    estasATantosDelLider: 'Sei a {n} pts dal leader',
 
     // Premios page
     premiosEspeciales: 'Premi Speciali',
-    cincoPuntosPorCadaAcierto: '5 punti per ogni colpo',
+    cincoPuntosPorCadaAcierto: '15 punti per ogni colpo',
     premiosIndividuales: 'Premi Individuali',
     pronosticaLosMejores: 'Pronostica i migliori giocatori del torneo. Indovina e ottieni',
-    ptsPorCada: '+5 pts',
+    ptsPorCada: '+15 pts',
     maximoPuntosSiAcertasLos3: '15 punti se indovini tutti e 3',
     maximo: 'Massimo:',
     goleadorDelTorneo: 'Capocannoniere del Torneo',
