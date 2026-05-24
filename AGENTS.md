@@ -120,6 +120,16 @@ Matches have 3 states based on current time vs fechaInicio:
   - Creates matches with "TBD" (Por definir) as team names
   - Run: `npx tsx src/scripts/cargarEliminatoria.ts`
 
+### Cleanup for Production
+
+- `cleanup.ts` - Clean Firestore of test data before going to production
+  - Deletes all documents in `pronosticos` collection
+  - Deletes all documents in `pronosticosPremios` collection
+  - Resets `resultado` field to `null` for all matches
+  - Run: `npx tsx src/scripts/cleanup.ts`
+  - **Does NOT delete users in Authentication**
+  - **Does NOT delete config/admin**
+
 ### Assigning Teams
 
 - `asignarEquiposEliminatoria.ts` - Assign actual teams to knockout matches
