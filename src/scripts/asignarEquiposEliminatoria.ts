@@ -3,56 +3,56 @@ import { db } from '../lib/firebase';
 
 // Mapa de partidos: numero -> { equipoA, equipoB, nombreA, nombreB }
 // Cruces según Reglamento FIFA Copa Mundial 2026 - Dieciseisavos de final
+// Los terceros son inventados para testing (equipos del torneo, no combinaciones reales)
 const EQUIPOS: Record<string, { equipoA: string; equipoB: string; nombreA: string; nombreB: string }> = {
   // ========== 16AVOS (M73-M88) ==========
-  // M73: 2°A vs 2°B
+  // M73: 2°A vs 2°B → Mexico vs Canada
   '73': { equipoA: 'Mexico', equipoB: 'Canada', nombreA: '2° Grupo A', nombreB: '2° Grupo B' },
-  // M74: 1°E vs 3°A/B/C/D/F
-  '74': { equipoA: 'Germany', equipoB: 'SouthAfrica', nombreA: '1° Grupo E', nombreB: '3° Grupo A/B/C/D/F' },
-  // M75: 1°F vs 2°C
+  // M74: 1°E vs 3°A/B/C/D/F → Germany vs Japan
+  '74': { equipoA: 'Germany', equipoB: 'Japan', nombreA: '1° Grupo E', nombreB: '3° Grupo A/B/C/D/F' },
+  // M75: 1°F vs 2°C → Netherlands vs Scotland
   '75': { equipoA: 'Netherlands', equipoB: 'Scotland', nombreA: '1° Grupo F', nombreB: '2° Grupo C' },
-  // M76: 1°C vs 2°F
-  '76': { equipoA: 'Brazil', equipoB: 'Japan', nombreA: '1° Grupo C', nombreB: '2° Grupo F' },
-  // M77: 1°I vs 3°C/D/F/G/H
-  '77': { equipoA: 'France', equipoB: 'Egypt', nombreA: '1° Grupo I', nombreB: '3° Grupo C/D/F/G/H' },
-  // M78: 2°E vs 2°I
+  // M76: 1°C vs 2°F → Brazil vs Sweden
+  '76': { equipoA: 'Brazil', equipoB: 'Sweden', nombreA: '1° Grupo C', nombreB: '2° Grupo F' },
+  // M77: 1°I vs 3°C/D/F/G/H → France vs Tunisia
+  '77': { equipoA: 'France', equipoB: 'Tunisia', nombreA: '1° Grupo I', nombreB: '3° Grupo C/D/F/G/H' },
+  // M78: 2°E vs 2°I → Ecuador vs Norway
   '78': { equipoA: 'Ecuador', equipoB: 'Norway', nombreA: '2° Grupo E', nombreB: '2° Grupo I' },
-  // M79: 1°A vs 3°C/E/F/H/I
-  '79': { equipoA: 'Mexico', equipoB: 'Ireland', nombreA: '1° Grupo A', nombreB: '3° Grupo C/E/F/H/I' },
-  // M80: 1°L vs 3°E/H/I/J/K
-  '80': { equipoA: 'England', equipoB: 'Jamaica', nombreA: '1° Grupo L', nombreB: '3° Grupo E/H/I/J/K' },
-  // M81: 1°D vs 3°B/E/F/I/J
-  '81': { equipoA: 'USA', equipoB: 'Qatar', nombreA: '1° Grupo D', nombreB: '3° Grupo B/E/F/I/J' },
-  // M82: 1°G vs 3°A/E/H/I/J
-  '82': { equipoA: 'Belgium', equipoB: 'Senegal', nombreA: '1° Grupo G', nombreB: '3° Grupo A/E/H/I/J' },
-  // M83: 2°K vs 2°L
+  // M79: 1°A vs 3°C/E/F/H/I → Mexico vs NewZealand
+  '79': { equipoA: 'Mexico', equipoB: 'NewZealand', nombreA: '1° Grupo A', nombreB: '3° Grupo C/E/F/H/I' },
+  // M80: 1°L vs 3°E/H/I/J/K → England vs SouthAfrica
+  '80': { equipoA: 'England', equipoB: 'SouthAfrica', nombreA: '1° Grupo L', nombreB: '3° Grupo E/H/I/J/K' },
+  // M81: 1°D vs 3°B/E/F/I/J → USA vs Iran
+  '81': { equipoA: 'USA', equipoB: 'Iran', nombreA: '1° Grupo D', nombreB: '3° Grupo B/E/F/I/J' },
+  // M82: 1°G vs 3°A/E/H/I/J → Belgium vs Australia
+  '82': { equipoA: 'Belgium', equipoB: 'Australia', nombreA: '1° Grupo G', nombreB: '3° Grupo A/E/H/I/J' },
+  // M83: 2°K vs 2°L → Colombia vs Croatia
   '83': { equipoA: 'Colombia', equipoB: 'Croatia', nombreA: '2° Grupo K', nombreB: '2° Grupo L' },
-  // M84: 1°H vs 2°J
+  // M84: 1°H vs 2°J → Spain vs Austria
   '84': { equipoA: 'Spain', equipoB: 'Austria', nombreA: '1° Grupo H', nombreB: '2° Grupo J' },
-  // M85: 1°B vs 3°E/F/G/I/J
-  '85': { equipoA: 'Switzerland', equipoB: 'Algeria', nombreA: '1° Grupo B', nombreB: '3° Grupo E/F/G/I/J' },
-  // M86: 1°J vs 2°H
-  '86': { equipoA: 'Argentina', equipoB: 'Portugal', nombreA: '1° Grupo J', nombreB: '2° Grupo H' },
-  // M87: 1°K vs 3°D/E/I/J/L
-  '87': { equipoA: 'Portugal', equipoB: 'Uzbekistan', nombreA: '1° Grupo K', nombreB: '3° Grupo D/E/I/J/L' },
-  // M88: 2°D vs 2°G
-  '88': { equipoA: 'Paraguay', equipoB: 'Iran', nombreA: '2° Grupo D', nombreB: '2° Grupo G' },
+  // M85: 1°B vs 3°E/F/G/I/J → Switzerland vs SaudiArabia
+  '85': { equipoA: 'Switzerland', equipoB: 'SaudiArabia', nombreA: '1° Grupo B', nombreB: '3° Grupo E/F/G/I/J' },
+  // M86: 1°J vs 2°H → Argentina vs Uruguay
+  '86': { equipoA: 'Argentina', equipoB: 'Uruguay', nombreA: '1° Grupo J', nombreB: '2° Grupo H' },
+  // M87: 1°K vs 3°D/E/I/J/L → Portugal vs UAE
+  '87': { equipoA: 'Portugal', equipoB: 'UAE', nombreA: '1° Grupo K', nombreB: '3° Grupo D/E/I/J/L' },
+  // M88: 2°D vs 2°G → Paraguay vs Iran (cambiado para evitar duplicado)
+  '88': { equipoA: 'Paraguay', equipoB: 'Egypt', nombreA: '2° Grupo D', nombreB: '2° Grupo G' },
 
   // ========== OCTAVOS (M89-M96) ==========
-  // Los winners de 16avos según bracket FIFA
   '89': { equipoA: 'Germany', equipoB: 'France', nombreA: 'Ganador M74', nombreB: 'Ganador M77' },
   '90': { equipoA: 'Mexico', equipoB: 'Brazil', nombreA: 'Ganador M73', nombreB: 'Ganador M75' },
-  '91': { equipoA: 'Netherlands', equipoB: 'Ecuador', nombreA: 'Ganador M76', nombreB: 'Ganador M78' },
-  '92': { equipoA: 'England', equipoB: 'USA', nombreA: 'Ganador M79', nombreB: 'Ganador M80' },
+  '91': { equipoA: 'Sweden', equipoB: 'Ecuador', nombreA: 'Ganador M76', nombreB: 'Ganador M78' },
+  '92': { equipoA: 'Mexico', equipoB: 'England', nombreA: 'Ganador M79', nombreB: 'Ganador M80' },
   '93': { equipoA: 'Colombia', equipoB: 'Spain', nombreA: 'Ganador M83', nombreB: 'Ganador M84' },
   '94': { equipoA: 'Belgium', equipoB: 'Argentina', nombreA: 'Ganador M81', nombreB: 'Ganador M82' },
   '95': { equipoA: 'Switzerland', equipoB: 'Argentina', nombreA: 'Ganador M85', nombreB: 'Ganador M86' },
-  '96': { equipoA: 'Paraguay', equipoB: 'Portugal', nombreA: 'Ganador M88', nombreB: 'Ganador M87' },
+  '96': { equipoA: 'Egypt', equipoB: 'Portugal', nombreA: 'Ganador M88', nombreB: 'Ganador M87' },
 
   // ========== CUARTOS (M97-M100) ==========
   '97': { equipoA: 'Germany', equipoB: 'Brazil', nombreA: 'Ganador M89', nombreB: 'Ganador M90' },
   '98': { equipoA: 'Colombia', equipoB: 'Belgium', nombreA: 'Ganador M93', nombreB: 'Ganador M94' },
-  '99': { equipoA: 'Netherlands', equipoB: 'England', nombreA: 'Ganador M91', nombreB: 'Ganador M92' },
+  '99': { equipoA: 'Ecuador', equipoB: 'England', nombreA: 'Ganador M91', nombreB: 'Ganador M92' },
   '100': { equipoA: 'Argentina', equipoB: 'Portugal', nombreA: 'Ganador M95', nombreB: 'Ganador M96' },
 
   // ========== SEMIS (M101-M102) ==========
@@ -106,6 +106,7 @@ async function asignarEquipos() {
   console.log(`   ✅ Actualizados: ${actualizados}`);
   console.log(`   ❌ Errores: ${errores}`);
   console.log('\n📝 Cruces según Reglamento FIFA 2026');
+  console.log('   ⚠️  Los 3° son inventados para testing');
 }
 
 asignarEquipos().catch(console.error);
