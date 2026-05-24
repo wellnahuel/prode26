@@ -22,79 +22,79 @@ import { db } from '../lib/firebase';
 const EQUIPOS: Record<string, { equipoA: string; equipoB: string; nombreA: string; nombreB: string }> = {
   // ========== 16AVOS (M73-M88) ==========
   // (1) M73: 2A vs 2B
-  '73': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '2° Grupo A', nombreB: '2° Grupo B' },
+  '73': { equipoA: 'USA', equipoB: 'Mexico', nombreA: '2° Grupo A', nombreB: '2° Grupo B' },
   // (2) M74: 1E vs Mejor 3° ABCDF
-  '74': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo E', nombreB: 'Mejor 3° ABCDF' },
+  '74': { equipoA: 'Argentina', equipoB: 'Netherlands', nombreA: '1° Grupo E', nombreB: 'Mejor 3° ABCDF' },
   // (3) M75: 1F vs 2C
-  '75': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo F', nombreB: '2° Grupo C' },
+  '75': { equipoA: 'Brasil', equipoB: 'Germany', nombreA: '1° Grupo F', nombreB: '2° Grupo C' },
   // (4) M76: 1C vs 2F
-  '76': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo C', nombreB: '2° Grupo F' },
+  '76': { equipoA: 'France', equipoB: 'Italy', nombreA: '1° Grupo C', nombreB: '2° Grupo F' },
   // (5) M77: 1I vs Mejor 3° CDFGH
-  '77': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo I', nombreB: 'Mejor 3° CDFGH' },
+  '77': { equipoA: 'England', equipoB: 'Uruguay', nombreA: '1° Grupo I', nombreB: 'Mejor 3° CDFGH' },
   // (6) M78: 2E vs 2I
-  '78': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '2° Grupo E', nombreB: '2° Grupo I' },
+  '78': { equipoA: 'Spain', equipoB: 'Portugal', nombreA: '2° Grupo E', nombreB: '2° Grupo I' },
   // (7) M79: 1A vs Mejor 3° CEFHI
-  '79': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo A', nombreB: 'Mejor 3° CEFHI' },
+  '79': { equipoA: 'Germany', equipoB: 'South Korea', nombreA: '1° Grupo A', nombreB: 'Mejor 3° CEFHI' },
   // (8) M80: 1L vs Mejor 3° EHIJK
-  '80': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo L', nombreB: 'Mejor 3° EHIJK' },
+  '80': { equipoA: 'Mexico', equipoB: 'Japan', nombreA: '1° Grupo L', nombreB: 'Mejor 3° EHIJK' },
   // (9) M81: 1D vs Mejor 3° BEFIJ
-  '81': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo D', nombreB: 'Mejor 3° BEFIJ' },
+  '81': { equipoA: 'Portugal', equipoB: 'Japan', nombreA: '1° Grupo D', nombreB: 'Mejor 3° BEFIJ' },
   // (10) M82: 1G vs Mejor 3° AEHIJ
-  '82': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo G', nombreB: 'Mejor 3° AEHIJ' },
+  '82': { equipoA: 'Brasil', equipoB: 'Netherlands', nombreA: '1° Grupo G', nombreB: 'Mejor 3° AEHIJ' },
   // (11) M83: 2K vs 2L
-  '83': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '2° Grupo K', nombreB: '2° Grupo L' },
+  '83': { equipoA: 'Spain', equipoB: 'France', nombreA: '2° Grupo K', nombreB: '2° Grupo L' },
   // (12) M84: 1H vs 2J
-  '84': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo H', nombreB: '2° Grupo J' },
+  '84': { equipoA: 'Netherlands', equipoB: 'Italy', nombreA: '1° Grupo H', nombreB: '2° Grupo J' },
   // (13) M85: 1B vs Mejor 3° EFGHI
-  '85': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo B', nombreB: 'Mejor 3° EFGHI' },
+  '85': { equipoA: 'England', equipoB: 'Germany', nombreA: '1° Grupo B', nombreB: 'Mejor 3° EFGHI' },
   // (14) M86: 1J vs 2H
-  '86': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo J', nombreB: '2° Grupo H' },
+  '86': { equipoA: 'Mexico', equipoB: 'Brasil', nombreA: '1° Grupo J', nombreB: '2° Grupo H' },
   // (15) M87: 1K vs Mejor 3° DEIJL
-  '87': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '1° Grupo K', nombreB: 'Mejor 3° DEIJL' },
+  '87': { equipoA: 'USA', equipoB: 'Argentina', nombreA: '1° Grupo K', nombreB: 'Mejor 3° DEIJL' },
   // (16) M88: 2D vs 2G
-  '88': { equipoA: 'TBD', equipoB: 'TBD', nombreA: '2° Grupo D', nombreB: '2° Grupo G' },
+  '88': { equipoA: 'France', equipoB: 'Spain', nombreA: '2° Grupo D', nombreB: '2° Grupo G' },
 
   // ========== OCTAVOS (M89-M96) ==========
   // (17) M89: W74 vs W77
-  '89': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M74', nombreB: 'Ganador M77' },
+  '89': { equipoA: 'Argentina', equipoB: 'England', nombreA: 'Ganador M74', nombreB: 'Ganador M77' },
   // (18) M90: W73 vs W75
-  '90': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M73', nombreB: 'Ganador M75' },
+  '90': { equipoA: 'USA', equipoB: 'Brasil', nombreA: 'Ganador M73', nombreB: 'Ganador M75' },
   // (19) M91: W76 vs W78
-  '91': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M76', nombreB: 'Ganador M78' },
+  '91': { equipoA: 'France', equipoB: 'Spain', nombreA: 'Ganador M76', nombreB: 'Ganador M78' },
   // (20) M92: W79 vs W80
-  '92': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M79', nombreB: 'Ganador M80' },
+  '92': { equipoA: 'Germany', equipoB: 'Mexico', nombreA: 'Ganador M79', nombreB: 'Ganador M80' },
   // (21) M93: W83 vs W84
-  '93': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M83', nombreB: 'Ganador M84' },
+  '93': { equipoA: 'Spain', equipoB: 'Netherlands', nombreA: 'Ganador M83', nombreB: 'Ganador M84' },
   // (22) M94: W81 vs W82
-  '94': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M81', nombreB: 'Ganador M82' },
+  '94': { equipoA: 'Portugal', equipoB: 'Brasil', nombreA: 'Ganador M81', nombreB: 'Ganador M82' },
   // (23) M95: W86 vs W88
-  '95': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M86', nombreB: 'Ganador M88' },
+  '95': { equipoA: 'Mexico', equipoB: 'Spain', nombreA: 'Ganador M86', nombreB: 'Ganador M88' },
   // (24) M96: W85 vs W87
-  '96': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M85', nombreB: 'Ganador M87' },
+  '96': { equipoA: 'England', equipoB: 'USA', nombreA: 'Ganador M85', nombreB: 'Ganador M87' },
 
   // ========== CUARTOS (M97-M100) ==========
   // (A) M97: W89 vs W90
-  '97': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M89', nombreB: 'Ganador M90' },
+  '97': { equipoA: 'Argentina', equipoB: 'Brasil', nombreA: 'Ganador M89', nombreB: 'Ganador M90' },
   // (B) M98: W93 vs W94
-  '98': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M93', nombreB: 'Ganador M94' },
+  '98': { equipoA: 'Netherlands', equipoB: 'Portugal', nombreA: 'Ganador M93', nombreB: 'Ganador M94' },
   // (C) M99: W91 vs W92
-  '99': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M91', nombreB: 'Ganador M92' },
+  '99': { equipoA: 'France', equipoB: 'Germany', nombreA: 'Ganador M91', nombreB: 'Ganador M92' },
   // (D) M100: W95 vs W96
-  '100': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M95', nombreB: 'Ganador M96' },
+  '100': { equipoA: 'Spain', equipoB: 'England', nombreA: 'Ganador M95', nombreB: 'Ganador M96' },
 
   // ========== SEMIS (M101-M102) ==========
   // SF1: W97 vs W98
-  '101': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M97', nombreB: 'Ganador M98' },
+  '101': { equipoA: 'Argentina', equipoB: 'Portugal', nombreA: 'Ganador M97', nombreB: 'Ganador M98' },
   // SF2: W99 vs W100
-  '102': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador M99', nombreB: 'Ganador M100' },
+  '102': { equipoA: 'Germany', equipoB: 'England', nombreA: 'Ganador M99', nombreB: 'Ganador M100' },
 
   // ========== TERCER PUESTO (M103) ==========
   // Perdedora SF1 vs Perdedora SF2
-  '103': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Perdedor SF1', nombreB: 'Perdedor SF2' },
+  '103': { equipoA: 'Portugal', equipoB: 'England', nombreA: 'Perdedor SF1', nombreB: 'Perdedor SF2' },
 
   // ========== FINAL (M104) ==========
   // Ganador SF1 vs Ganador SF2
-  '104': { equipoA: 'TBD', equipoB: 'TBD', nombreA: 'Ganador SF1', nombreB: 'Ganador SF2' },
+  '104': { equipoA: 'Argentina', equipoB: 'Germany', nombreA: 'Ganador SF1', nombreB: 'Ganador SF2' },
 };
 
 async function asignarEquipos() {
