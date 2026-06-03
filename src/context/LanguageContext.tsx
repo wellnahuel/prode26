@@ -178,7 +178,7 @@ const translations: Record<Language, Translations> = {
   es: {
     // Nav
     inicio: 'Inicio',
-    pronosticos: 'Pronósticos',
+    pronosticos: 'Fase de grupos',
     eliminatoria: 'Eliminatoria',
     posiciones: 'Posiciones',
     premios: 'Premios',
@@ -347,7 +347,7 @@ seCierraEn: 'Se cierra en',
   it: {
     // Nav
     inicio: 'Home',
-    pronosticos: 'Pronostici',
+    pronosticos: 'Fase a gironi',
     eliminatoria: 'Eliminazione',
     posiciones: 'Classifica',
     premios: 'Premi',
